@@ -1,32 +1,36 @@
-import { Grid } from "semantic-ui-react";
+import { Container,
+  ListItem,
+  ListIcon,
+  ListHeader,
+  ListDescription,
+  ListContent,
+  List, } from "semantic-ui-react";
 import styles from "./ItemList.module.css";
 import Link from "next/link";
 
-export default function BoardList({ list }) {
+export default function BoardList({ boardList }) {
   return (
     <div>
-      <Grid columns={3}>
-        <Grid.Row>
-          {list.map((item) => (
-            <Grid.Column key={item.id}>
-              <Link href="/detail/[id]" as={`/detail/${item.id}`}>
-                  <div className={styles.wrap}>
-                    <img
-                      src={item.image_link}
-                      alt={item.name}
-                      className={styles.img_item}
-                    />
-                    <strong className={styles.tit_item}>{item.name}</strong>
-                    <span className={styles.txt_info}>
-                      {item.category} {item.product_type}
-                    </span>
-                    <strong className={styles.num_price}>${item.price}</strong>
-                  </div>
-              </Link>
-            </Grid.Column>
+
+          {boardList.map((board) => (
+              <List divided relaxed>
+              {/* <Link href="/board/detail/[id]" as={`/board/detail/${board.id}`}> */}
+              <ListItem href="/board/detail/[id]">
+              
+              <ListIcon name='github' size='large' verticalAlign='middle'/>
+             
+              <ListContent>
+              
+                <ListHeader as='a'>{board.boardTitle}</ListHeader>
+                
+                <ListDescription as='a'>Updated 10 mins ago</ListDescription>
+             
+              </ListContent>
+              
+              </ListItem>
+              {/* </Link> */}
+              </List>
           ))}
-        </Grid.Row>
-      </Grid>
     </div>
   );
 }

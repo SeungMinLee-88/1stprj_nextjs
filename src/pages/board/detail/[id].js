@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { use } from 'react';
 import ReactDOM from "react-dom";
 
-import Item from "../../component/Item";
+import Item from "../../../component/Board";
 
 
 export default function Post({ item, name }) {

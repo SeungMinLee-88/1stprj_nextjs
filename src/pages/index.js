@@ -9,14 +9,26 @@ export default function Home() {
   const [boardList, setboardList] = useState([]);
 
   const API_URL =
-    "http://localhost:8090/restboard/";
+    process.env.NEXT_PUBLIC_API_URL;
 
   function getData() {
-    Axios.get(API_URL).then((res) => {
-      console.log(res.data);
-      setboardList(res.data);
-      console.log("res.data : " + res.data.length)
+    Axios({
+      method: 'post',
+      url: API_URL,
+      data: {
+        sortfield: "board_title",
+        searchfield: "",
+        searchtext: "11"
+      }
+    }).then((response) => {
+      console.log(response.data);
+      setboardList(response.data);
+      console.log("response.data : " + response.data.length)
     });
+    
+    boardList.map((board) => (
+      console.log("board.boardTitle : " + board.boardTitle)
+    ));
   }
  
 
@@ -33,7 +45,8 @@ export default function Home() {
       Board
       </Header>
       <Divider />
-      <BoardList list={boardList.slice(0, 9)} />
+     {/*  <BoardList boardList={boardList.slice(0, 2)} /> */}
+     <BoardList boardList={boardList} />
       {/* <ItemList list={list.slice(9)} /> */}
     </div>
   );
