@@ -4,33 +4,41 @@ import { Container,
   ListHeader,
   ListDescription,
   ListContent,
-  List, } from "semantic-ui-react";
+  List,
+  Pagination } from "semantic-ui-react";
 import styles from "./ItemList.module.css";
 import Link from "next/link";
 
 export default function BoardList({ boardList }) {
+  
   return (
     <div>
-
+      <div>
+       <List divided relaxed>
           {boardList.map((board) => (
-              <List divided relaxed>
-              {/* <Link href="/board/detail/[id]" as={`/board/detail/${board.id}`}> */}
-              <ListItem href="/board/detail/[id]">
-              
+            <ListItem href="/board/detail/[id]"  key={board.id} >
+            
               <ListIcon name='github' size='large' verticalAlign='middle'/>
-             
               <ListContent>
-              
-                <ListHeader as='a'>{board.boardTitle}</ListHeader>
-                
-                <ListDescription as='a'>Updated 10 mins ago</ListDescription>
-             
+                <ListHeader>{board.boardTitle}</ListHeader>
+                <ListDescription>Updated 10 mins ago</ListDescription>
               </ListContent>
-              
-              </ListItem>
-              {/* </Link> */}
-              </List>
+            </ListItem>
           ))}
+        </List>
+        </div>
+        {/* https://ko.react.dev/learn/javascript-in-jsx-with-curly-braces */}
+        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+        <Pagination
+          boundaryRange={0}
+          defaultActivePage={1}
+          ellipsisItem={null}
+          firstItem={null}
+          lastItem={null}
+          siblingRange={1}
+          totalPages={10}
+        />
+        </div>
     </div>
   );
 }

@@ -13,17 +13,26 @@ export default function Home() {
 
   function getData() {
     Axios({
-      method: 'post',
+      method: 'GET',
       url: API_URL,
-      data: {
-        sortfield: "board_title",
-        searchfield: "",
-        searchtext: "11"
+      params: {
+        page: "1",
+        size: "10",
+        sort: "createdTime,desc",
+        searchKey: "boardTitle",
+        searchValue: ""
       }
     }).then((response) => {
-      console.log(response.data);
-      setboardList(response.data);
-      console.log("response.data : " + response.data.length)
+      console.log("response.data : " + JSON.stringify(response.data));
+      
+      var startPage = ((int)(Math.ceil((double)response.data.pageNumber / response.data.pageable.size)) - 1 * response.data.size + 1;
+
+      /* var startPage = (((int)(Math.ceil((double)response.data.pageable.pageNumber / blockLimit))) - 1) * response.data.pageable.size + 1;
+      int endPage = ((startPage + response.data.pageable.size - 1) < response.data.pageable.totalPages) ? startPage + response.data.pageable.size - 1 : boardList.getTotalPages(); */
+      
+      console.log("response.data.content : " + JSON.stringify(response.data.content));
+      setboardList(response.data.content);
+      //console.log("response.data.content : " + JSON.stringify(response.data.content.boardTitle));
     });
     
     boardList.map((board) => (
