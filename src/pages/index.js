@@ -4,31 +4,60 @@ import { useEffect, useState } from "react";
 import { Divider, Header } from "semantic-ui-react";
 import BoardList from "../component/BoardList";
 import styles from "../styles/Home.module.css";
+import Reacttest from "./Reacttest";
 
 export default function Home() {
   const [boardList, setboardList] = useState([]);
+  /* const [currentPage, setCurrentPage] = useState({
+    currentPage: 1,
+    TotalPage: 1,
+  }); */
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [searchKey, setSearchKey] = useState("boardTitle");
+  const [searchValue, setSearchValue] = useState("");
 
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL;
-
+    var startPage = "";
+    var endPage = "";
   function getData() {
     Axios({
       method: 'GET',
       url: API_URL,
       params: {
-        page: "1",
-        size: "10",
+        page: currentPage,
+        size: "3",
         sort: "createdTime,desc",
-        searchKey: "boardTitle",
-        searchValue: ""
+        searchKey: searchKey,
+        searchValue: searchValue
       }
     }).then((response) => {
       console.log("response.data : " + JSON.stringify(response.data));
       
-      var startPage = ((int)(Math.ceil((double)response.data.pageNumber / response.data.pageable.size)) - 1 * response.data.size + 1;
+      /* setCurrentPage({
+        ...currentPage,
+        TotalPage: response.data.totalPages
+      }); */
+      setTotalPage(response.data.totalPages);
+      
+      startPage = (((Number)(Math.ceil(Number(currentPage) / response.data.totalPages))) - 1) * response.data.pageable.pageSize + 1;
 
-      /* var startPage = (((int)(Math.ceil((double)response.data.pageable.pageNumber / blockLimit))) - 1) * response.data.pageable.size + 1;
-      int endPage = ((startPage + response.data.pageable.size - 1) < response.data.pageable.totalPages) ? startPage + response.data.pageable.size - 1 : boardList.getTotalPages(); */
+      console.log("response.data.pageable.pageNumber : " + response.data.pageable.pageNumber);
+      console.log("response.data.totalPages : " + response.data.totalPages);
+      console.log("response.data.pageable.pageSize : " + response.data.pageable.pageSize);
+      console.log("va11 : " + (Math.ceil(Number(currentPage) / response.data.totalPages)));
+      console.log("va 22: " + (Math.ceil(Number(response.data.pageable.pageNumber) / response.data.pageable.pageSize)));
+      
+      console.log("response.data.pageable.pageSize + 1 : " + Number(response.data.pageable.pageSize) + 1);
+      
+      console.log("type response.data.pageable.pageSize : " + typeof response.data.pageable.pageSize);
+      
+      console.log("startPage : " + startPage);
+      
+      console.log("response.data.pageable.totalPages : " + response.data.totalPages);
+      endPage = ((startPage + response.data.pageable.pageSize - 1) < response.data.totalPages) ? startPage + response.data.pageable.pageSize - 1 : response.data.totalPages;
+      console.log("endPage : " + endPage);
       
       console.log("response.data.content : " + JSON.stringify(response.data.content));
       setboardList(response.data.content);
@@ -39,11 +68,18 @@ export default function Home() {
       console.log("board.boardTitle : " + board.boardTitle)
     ));
   }
- 
+  function changePage(page) {
+    console.log("call changePage");
+/*     setCurrentPage({
+      ...currentPage,
+      currentPage: page
+    }); */
+    setCurrentPage(page);
+  }
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [currentPage, searchKey, searchValue]);
 
   return (
     <div>
@@ -55,8 +91,10 @@ export default function Home() {
       </Header>
       <Divider />
      {/*  <BoardList boardList={boardList.slice(0, 2)} /> */}
-     <BoardList boardList={boardList} />
+     <BoardList boardList={boardList} currentPage={currentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
+     startPage={startPage} endPage={endPage} />
       {/* <ItemList list={list.slice(9)} /> */}
+      <Reacttest />
     </div>
   );
 }

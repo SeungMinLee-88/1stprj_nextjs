@@ -7,5 +7,6 @@ int startPage = (((int)(Math.ceil((double)pageable.getPageNumber() / blockLimit)
         int endPage = ((startPage + blockLimit - 1) < boardList.getTotalPages()) ? startPage + blockLimit - 1 : boardList.getTotalPages();
 		
 		
-		var startPage = (((int)(Math.ceil((double)response.data.pageable.pageNumber / blockLimit))) - 1) * response.data.pageable.size + 1;
-        int endPage = ((startPage + response.data.pageable.size - 1) < response.data.pageable.totalPages) ? startPage + response.data.pageable.size - 1 : boardList.getTotalPages();
+		var startPage = ((Number)(Math.ceil(Number(response.data.pageable.pageNumber) / response.data.pageable.pageSize))) - 1 * response.data.pageable.pageSize + 1;
+
+        var endPage = ((startPage + response.data.pageable.pageSize - 1) < response.data.pageable.totalPages) ? startPage + response.data.pageable.pageSize - 1 : response.data.pageable.totalPages;

@@ -12,7 +12,7 @@ export default function Top() {
             style={{ display: "block", width: 80 }}
           />
         </div>
-        <Header as="h1">코딩앙마</Header>
+        <Header as="h1">Spring</Header>
       </div>
       <Gnb />
     </div>

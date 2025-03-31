@@ -8,7 +8,7 @@ export default function Footer() {
           textAlign: "center",
         }}
       >
-        Copyright © 코딩앙마. All rights reserved.
+        Copyright © Spring. All rights reserved.
       </div>
     );
   }
