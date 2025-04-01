@@ -1,8 +1,10 @@
 import Axios from "axios";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { Divider, Header } from "semantic-ui-react";
+import { useRouter } from "next/navigation";
+import { Divider, Header, Button } from "semantic-ui-react";
 import BoardList from "../component/BoardList";
+import BoardWrite from "../component/BoardWrite";
 import styles from "../styles/Home.module.css";
 import Reacttest from "./Reacttest";
 
@@ -16,9 +18,10 @@ export default function Home() {
   const [totalPage, setTotalPage] = useState(1);
   const [searchKey, setSearchKey] = useState("boardTitle");
   const [searchValue, setSearchValue] = useState("");
+  const [goUrl, setGoUrl] = useState("/");
 
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL;
+    `${process.env.NEXT_PUBLIC_API_URL}/pagingList`;
     var startPage = "";
     var endPage = "";
   function getData() {
@@ -48,14 +51,11 @@ export default function Home() {
       console.log("response.data.pageable.pageSize : " + response.data.pageable.pageSize);
       console.log("va11 : " + (Math.ceil(Number(currentPage) / response.data.totalPages)));
       console.log("va 22: " + (Math.ceil(Number(response.data.pageable.pageNumber) / response.data.pageable.pageSize)));
-      
       console.log("response.data.pageable.pageSize + 1 : " + Number(response.data.pageable.pageSize) + 1);
-      
       console.log("type response.data.pageable.pageSize : " + typeof response.data.pageable.pageSize);
-      
       console.log("startPage : " + startPage);
-      
       console.log("response.data.pageable.totalPages : " + response.data.totalPages);
+      
       endPage = ((startPage + response.data.pageable.pageSize - 1) < response.data.totalPages) ? startPage + response.data.pageable.pageSize - 1 : response.data.totalPages;
       console.log("endPage : " + endPage);
       
@@ -79,8 +79,30 @@ export default function Home() {
 
   useEffect(() => {
     getData();
-  }, [currentPage, searchKey, searchValue]);
+  }, [currentPage]);
+  
+  useEffect(() => {
+    setCurrentPage(1);
+    getData();
+  }, [searchKey, searchValue]);
 
+    
+  const router = useRouter();
+  
+/*   function goLink(url) {
+    console.log("call goLink");
+    setGoUrl(url);
+  } */
+ console.log("goUrl : " + goUrl);
+ if(goUrl === "BoardWrite")
+ {
+  return (
+    <div>
+      <BoardWrite changeGoUrl={setGoUrl}/>
+      
+    </div>
+  )
+}
   return (
     <div>
       <Head>
@@ -93,8 +115,13 @@ export default function Home() {
      {/*  <BoardList boardList={boardList.slice(0, 2)} /> */}
      <BoardList boardList={boardList} currentPage={currentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
      startPage={startPage} endPage={endPage} />
+           
       {/* <ItemList list={list.slice(9)} /> */}
       <Reacttest />
+      {/* <Button>Click Here</Button> */}
+      
+      <button class="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>
+
     </div>
   );
 }

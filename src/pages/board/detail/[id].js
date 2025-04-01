@@ -5,12 +5,11 @@ import { useRouter } from "next/navigation";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { useEffect, useState } from "react";
 import { use } from 'react';
-import ReactDOM from "react-dom";
 
-import Item from "../../../component/Board";
+import Board from "../../../component/Board.js";
 
 
-export default function Post({ item, name }) {
+export default function BoardDetail({ board, name }) {
   const router = useRouter();
 
   if (router.isFallback) {
@@ -25,14 +24,14 @@ export default function Post({ item, name }) {
 
   return (
     <>
-      {item && (
+      {board && (
         <>
           <Head>
-            <title>{item.name}</title>
-            <meta name="description" content={item.description}></meta>
+            <title>{board.boardTitle}</title>
+            <meta name="description" content={board.boardContents}></meta>
           </Head>
           {name} 환경 입니다.
-          <Item item={item} />
+          <Board board={board} />
         </>
       )}
     </>
@@ -40,31 +39,34 @@ export default function Post({ item, name }) {
 };
 
 export async function getStaticPaths() {
-  console.log("NEXT_PUBLIC_API_URL : " + process.env.NEXT_PUBLIC_API_URL);
-  const apiUrl =  `${process.env.NEXT_PUBLIC_API_URL}`;
+  const apiUrl =  `http://localhost:8090/api/v1/board/pagingList`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
-  console.log("res : " + res);
   return {
-    paths: data.slice(0, 9).map((item) => ({
+    paths: data.content.slice(0, 100).map((item) => ({
       params: {
         id: item.id.toString(),
       },
     })),
     fallback: true,
   };
+/*   return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: 'blocking' //indicates the type of fallback
+} */
 }
 
 export async function getStaticProps(context) {
   
+  console.log("call getStaticProps");
   const id = context.params.id;
-  const apiUrl = `http://makeup-api.herokuapp.com/api/v1/products/${id}.json`;
+  const apiUrl = `http://localhost:8090/api/v1/board/${id}`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
 
   return {
     props: {
-      item: data,
+      board: data,
       name: process.env.name,
     },
   };

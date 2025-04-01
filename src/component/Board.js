@@ -1,8 +1,20 @@
-import { Button, Header } from "semantic-ui-react";
-import styles from "./Item.module.css";
+import { 
+  Button,
+  Header,
+  Container,
+  ItemMeta,
+  ItemImage,
+  ItemHeader,
+  ItemGroup,
+  ItemExtra,
+  ItemDescription,
+  ItemContent,
+  Image,
+  Item, } from "semantic-ui-react";
+/* import styles from "./Item.module.css"; */
 
-export default function Item({ item }) {
-  const {
+export default function Board({ board }) {
+/*   const {
     name,
     image_link,
     price,
@@ -11,25 +23,22 @@ export default function Item({ item }) {
     category,
     product_type,
     product_link,
-  } = item;
+  } = item; */
   return (
     <>
-      <div className={styles.wrap}>
-        <div className={styles.img_item}>
-          <img src={image_link} alt={name} />
-        </div>
-        <div className={styles.info_item}>
-          <strong className={styles.tit_item}>{name}</strong>
-          <strong className={styles.num_price}>${price}</strong>
-          <span className={styles.txt_info}>
-            {category ? `${category}/` : ""}
-            {product_type}
-          </span>
-          <button color="orange">구매하기</button>
-        </div>
-      </div>
-      <Header as="h3">Description</Header>
-      <p style={{ paddingBottom: 20, fontSize: 18 }}>{description}</p>
+      <ItemContent>
+        <ItemHeader as='a'>{board.boardTitle}</ItemHeader>
+        <ItemMeta>Description</ItemMeta>
+        <ItemDescription>
+          {/* <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' /> */}
+        </ItemDescription>
+        <ItemExtra>Additional Details</ItemExtra>
+      </ItemContent>
+      <Container>
+      <p>
+      {board.boardContents}
+        </p>
+      </Container>
     </>
   );
 }

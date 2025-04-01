@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+
 import { Container,
   ListItem,
   ListIcon,
@@ -47,6 +48,7 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
   });
   
   const [activePageData, setActivePageData] = useState([]);
+
   
   const goToPage = pageNumber => {
     //setPaginationOptions({ ...paginationOptions, activePage: pageNumber });
@@ -111,12 +113,14 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
         {/* {  if(boardList.length === 0){
     return <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}><h1>No Content</h1></div>
   }} */}
+   {/* <ListItem href="/board/detail/${board.id}"  key={board.id} > */}
+   {/* <Link href="/board/detail/[id]" as={`/board/detail/${board.id}`}> */}
           {boardList.map((board) => (
-            <ListItem href="/board/detail/[id]"  key={board.id} >
-            
+           
+           <ListItem href={`/board/detail/${board.id}`}  key={board.id} >
               <ListIcon name='github' size='large' verticalAlign='middle'/>
               <ListContent>
-                <ListHeader>{board.boardTitle} || {board.boardWriter}</ListHeader>
+                <ListHeader>{board.id} || {board.boardTitle} || {board.boardWriter}</ListHeader>
                 <ListDescription>{board.boardCreatedTime}</ListDescription>
               </ListContent>
             </ListItem>
@@ -139,6 +143,7 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
           
         />
         </div>
+
     </div>
   );
 }
