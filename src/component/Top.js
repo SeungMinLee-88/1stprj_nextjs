@@ -6,7 +6,13 @@ export default function Top() {
   
   async function logout(){
     console.log("call logout");
-/*     await Axios.post(`http://localhost:8090/logout`)
+    await Axios.post(`http://localhost:8090/logout` , {
+      body: {
+        username: "aaa",
+        password: "aaa"
+      }
+    }
+    )
     .then(function (response) {
       console.log("response.data : " + JSON.stringify(response.data));
 
@@ -14,7 +20,7 @@ export default function Top() {
     })
     .catch(function (error) {
       console.log(error);
-    }); */
+    });
   }
   
   return (
@@ -30,7 +36,7 @@ export default function Top() {
         <Header as="h1">Spring</Header>
       </div>
       <div style={{display: 'flex',  justifyContent:'right'}}>
-        <button class="ui primary button" color="blue" onClick={() => logout}>
+        <button class="ui primary button" color="blue" onClick={() => logout()}>
           LogOut
         </button>
       </div>

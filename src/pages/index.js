@@ -25,9 +25,11 @@ export default function Home() {
     var startPage = "";
     var endPage = "";
   function getData() {
-    Axios({
-      method: 'GET',
-      url: API_URL,
+    Axios.get(API_URL, {
+      headers: {
+        "Content-Type": "application/json", 
+        access: localStorage.getItem("access") 
+      },
       params: {
         page: currentPage,
         size: "3",
