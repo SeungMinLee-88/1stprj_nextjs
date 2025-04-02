@@ -44,6 +44,14 @@ export default function Gnb() {
           router.push("/admin");
         }}
       />
+      
+      <Menu.Item
+        name="login"
+        active={activeItem === "login"}
+        onClick={() => {
+          router.push("/login");
+        }}
+      />
     </Menu>
   );
 }
