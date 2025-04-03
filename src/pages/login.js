@@ -17,12 +17,18 @@ export default function Login() {
           evt.preventDefault();
           const username = evt.target.username.value;
           const password = evt.target.password.value;
-          await Axios.post(`http://localhost:8090/login`, {
+          //Axios.defaults.withCredentials = true;
+          await Axios.post(`http://localhost:8090/login`, 
+          {
             username: username,
             password: password
-          })
+          },
+          {withCredentials: true}
+          )
           .then(function (response) {
+            console.log("response : " + JSON.stringify(response));
             console.log("response.data : " + JSON.stringify(response.headers.access));
+            console.log("set-cookie : " + response.headers['set-cookie']);
             if (response.headers.access) {
               localStorage.setItem("access", response.headers.access);
             }
@@ -40,7 +46,7 @@ export default function Login() {
         <Form.Field inline>
           <input name="password" type="password" placeholder="Password" />
         </Form.Field>
-        <button class="ui primary button" color="blue" onClick={() => login}>
+        <button className="ui primary button" color="blue" onClick={() => login}>
           Login
         </button>
       </Form>

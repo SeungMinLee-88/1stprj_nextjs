@@ -31,10 +31,10 @@ export default function Gnb() {
         onClick={goLink}
       />
       <Menu.Item
-        name="Contact Us"
-        active={activeItem === "contact"}
+        name="Reaserve"
+        active={activeItem === "reserve"}
         onClick={() => {
-          router.push("/contact");
+          router.push("/reserve");
         }}
       />
       <Menu.Item

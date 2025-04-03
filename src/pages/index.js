@@ -7,6 +7,20 @@ import BoardList from "../component/BoardList";
 import BoardWrite from "../component/BoardWrite";
 import styles from "../styles/Home.module.css";
 import Reacttest from "./Reacttest";
+import Error403 from "./403";
+
+
+
+/* console.log("response.data.pageable.pageNumber : " + response.data.pageable.pageNumber);
+console.log("response.data.totalPages : " + response.data.totalPages);
+console.log("response.data.pageable.pageSize : " + response.data.pageable.pageSize);
+console.log("va11 : " + (Math.ceil(Number(currentPage) / response.data.totalPages)));
+console.log("va 22: " + (Math.ceil(Number(response.data.pageable.pageNumber) / response.data.pageable.pageSize)));
+console.log("response.data.pageable.pageSize + 1 : " + Number(response.data.pageable.pageSize) + 1);
+console.log("type response.data.pageable.pageSize : " + typeof response.data.pageable.pageSize);
+console.log("startPage : " + startPage);
+console.log("response.data.pageable.totalPages : " + response.data.totalPages);
+ */
 
 export default function Home() {
   const [boardList, setboardList] = useState([]);
@@ -24,6 +38,28 @@ export default function Home() {
     `${process.env.NEXT_PUBLIC_API_URL}/pagingList`;
     var startPage = "";
     var endPage = "";
+    
+  async function refreshToken()
+  {
+    const refreshToken = "";
+    await Axios.post(`http://localhost:8090/reissue` ,
+      {},
+      {withCredentials: true}
+      )
+      .then(function (response) {
+        console.log("response.data : " + JSON.stringify(response));
+        if(response.status === 200){
+          console.log("response.status200");
+          localStorage.removeItem("access");
+          localStorage.setItem("access", response.headers.access);
+        }
+      //router.push(`/`);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+    
   function getData() {
     Axios.get(API_URL, {
       headers: {
@@ -36,8 +72,9 @@ export default function Home() {
         sort: "createdTime,desc",
         searchKey: searchKey,
         searchValue: searchValue
-      }
-    }).then((response) => {
+      },
+    }
+  ).then((response, error) => {
       console.log("response.data : " + JSON.stringify(response.data));
       
       /* setCurrentPage({
@@ -48,22 +85,45 @@ export default function Home() {
       
       startPage = (((Number)(Math.ceil(Number(currentPage) / response.data.totalPages))) - 1) * response.data.pageable.pageSize + 1;
 
-      console.log("response.data.pageable.pageNumber : " + response.data.pageable.pageNumber);
-      console.log("response.data.totalPages : " + response.data.totalPages);
-      console.log("response.data.pageable.pageSize : " + response.data.pageable.pageSize);
-      console.log("va11 : " + (Math.ceil(Number(currentPage) / response.data.totalPages)));
-      console.log("va 22: " + (Math.ceil(Number(response.data.pageable.pageNumber) / response.data.pageable.pageSize)));
-      console.log("response.data.pageable.pageSize + 1 : " + Number(response.data.pageable.pageSize) + 1);
-      console.log("type response.data.pageable.pageSize : " + typeof response.data.pageable.pageSize);
-      console.log("startPage : " + startPage);
-      console.log("response.data.pageable.totalPages : " + response.data.totalPages);
-      
+
       endPage = ((startPage + response.data.pageable.pageSize - 1) < response.data.totalPages) ? startPage + response.data.pageable.pageSize - 1 : response.data.totalPages;
       console.log("endPage : " + endPage);
       
       console.log("response.data.content : " + JSON.stringify(response.data.content));
       setboardList(response.data.content);
       //console.log("response.data.content : " + JSON.stringify(response.data.content.boardTitle));
+    }).catch(function (error) {
+      if (error.response) {
+        // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
+        console.log("error.response.data : " + error.response.data);
+        console.log("error.response.status : " + error.response.status);
+        console.log("error.response.headers : " + JSON.stringify(error.response.headers));
+
+          if(error.response.status === 401 && error.response.data === "expired")
+          {
+            console.log("error.response.status 401 ");
+            refreshToken();
+          }
+          else if(error.response.status === 403)
+          {
+            console.log("error.response.status 403 ");
+            return (
+              <div>
+                <Error403 />
+              </div>
+            )
+          }
+      } else if (error.request) {
+        // 요청이 전송되었지만, 응답이 수신되지 않았습니다. 
+        // 'error.request'는 브라우저에서 XMLHtpRequest 인스턴스이고,
+        // node.js에서는 http.ClientRequest 인스턴스입니다.
+        console.log("error.request : " + error.request);
+      } else {
+        // 오류가 발생한 요청을 설정하는 동안 문제가 발생했습니다.
+        console.log("error.message : " + error.message);
+      }
+      console.log("error.config : " + error.config);
+      console.log(error.config);
     });
     
     boardList.map((board) => (
