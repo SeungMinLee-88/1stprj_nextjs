@@ -8,6 +8,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 
 export default function ReserveCalendar() {
+  var moment = require('moment');
+  const datemm = moment("2023-06-23");
     const today = new Date();
     const fullMonth = (today.getMonth() + 1).toString().padStart(2, '0');
     console.log('today.getMonth() : ' + today.getMonth());
@@ -43,7 +45,7 @@ export default function ReserveCalendar() {
       
     
     const calendarComponentRef = React.createRef();
-    const [state, setState] = useState({
+    const [testState, setTestState] = useState({
     events: [
       { id: 1, title: "event 1", date: "2025-04-01" },
       {
@@ -88,10 +90,38 @@ export default function ReserveCalendar() {
     console.log("endDay : " + endDay);
     
     const handleDateClick = (arg) => {
-        return alert(arg.dateStr);
+        //return alert(arg.dateStr);
       };
       
       const handleSelectedDates = info => {
+      console.log("info : " + JSON.stringify(info));
+      console.log("moment start : " + moment(info.start).format('YYYY-MM-DD'));
+
+      var  startDate = moment(info.start);
+      console.log("startDate : " + startDate);
+    	var endDate = moment(info.end);
+      const date = startDate.clone();
+      var isWeekend = false;
+      
+      while (date.isBefore(endDate)) {
+  			if (date.isoWeekday() == 6 || date.isoWeekday() == 7) {
+          isWeekend = true;
+        }
+      	date.add(1, 'day');
+      }
+      
+      if (isWeekend) {
+      alert('can\'t add event - weekend');
+      return false;
+      	
+      }
+  
+  
+  
+		startDate= startDate.format("YYYY-MM-DD");
+		endDate= endDate.format("YYYY-MM-DD");   
+        
+       /*  console.log("info : " + JSON.stringify(info));
         alert("selected " + info.startStr + " to " + info.endStr);
         const title = prompt("What's the name of the title");
         console.log(info);
@@ -101,12 +131,13 @@ export default function ReserveCalendar() {
             start: info.startStr,
             end: info.endStr
           };
-          const data = [...state.events, newEvent];
-          setState({ events: data });
-          console.log("here", data);
+          const setdata = [...testState.events, newEvent];
+          console.log("setdata : " + setdata);
+          setTestState({ events: setdata });
+          console.log("here", setdata);
         } else {
           console.log("nothing");
-        }
+        } */
       };
     
     return(
@@ -132,10 +163,20 @@ export default function ReserveCalendar() {
           eventClick={event => {
             console.log(event.event._def.publicId);
           }}
-          events={state.events}
+          events={testState.events}
           select={handleSelectedDates}
           eventLimit={3}
+          showNonCurrentDates={false}
+          weekends={true}
         />
+        <div class="ui checkbox">
+          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
+          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
+          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
+          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
+        </div>
+        
+
         </div>
     )
 }
