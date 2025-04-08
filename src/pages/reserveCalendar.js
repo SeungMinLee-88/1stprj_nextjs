@@ -1,98 +1,79 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { flushSync } from 'react-dom';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
+import { INITIAL_EVENTS, createEventId } from './event-utils'
 
-export default function ReserveCalendar() {
+export default function ReserveCalendar({reserveData}) {
   var moment = require('moment');
-  const datemm = moment("2023-06-23");
-    const today = new Date();
-    const fullMonth = (today.getMonth() + 1).toString().padStart(2, '0');
-    console.log('today.getMonth() : ' + today.getMonth());
-    console.log('fullMonth : ' + fullMonth);
-    /* fullMonth = fullMonth.length === 1 ? "0" : fullMonth; */
-    const [reqYear, setReqYear] = useState("");
-    const [reqMonth, setReqMonth] = useState("");
-    const [year, setYear] = useState(reqYear ? reqYear : today.getFullYear());
-    const [month, setMonth] = useState(reqMonth ? reqMonth : fullMonth);
-    const [strYear, setStrYear] = useState(reqYear);
-    const [strMonth, setstrMonth] = useState(reqMonth);
-    const [date, setDate] = useState(today.toISOString().split('T')[0]);
-    const [curMonth, setCurmonth] = useState(today.getMonth());
-    const [dayWeek, setEayWeek] = useState(WeekOfDay(year, month));
-    const [endDay, setEndDay] = useState(LastDayOfMonth(today.getFullYear(), today.getMonth()));
-    const myDate = new Date();
-    myDate.setFullYear(2025);
-    myDate.setMonth(3);
-    myDate.setDate(1);
-    
-        
-    function WeekOfDay(Year, Month) {
-        const weekOfDay = new Date();
-        weekOfDay.setFullYear(Year);
-        weekOfDay.setMonth(Month);
-        weekOfDay.setDate(1);
-        return weekOfDay.getDate();
-    }
-    
-    function LastDayOfMonth(Year, Month) {
-        return new Date((new Date(Year, Month, 1)) - 1).getDate();
-    }
-      
-    
-    const calendarComponentRef = React.createRef();
-    const [testState, setTestState] = useState({
-    events: [
-      { id: 1, title: "event 1", date: "2025-04-01" },
-      {
-        title: "event 2",
-        start: "2025-04-01",
-        end: "2025-04-05",
-        allDay: true,
-        HostName: "William"
-      },
-      {
-        title: "event 3",
-        start: "2025-04-05",
-        end: "2025-04-07",
-        allDay: true
-      },
-      {
-        title: "event 4",
-        start: "2025-04-05",
-        end: "2025-04-07",
-        allDay: true
-      },
-      {
-        title: "event 5",
-        start: "2025-04-05",
-        end: "2025-04-07",
-        allDay: true
-      },
-      {
-        title: "event 6",
-        start: "2025-04-05",
-        end: "2025-04-07",
-        allDay: true
-      }
-    ]
-  });
+  console.log("ReserveCalendar reserveData : " + JSON.stringify(reserveData));
+  //const [reserveDataList, setReserveDataList] = useState("aaa");
+  
+  const [reserveDataList, setReserveDataList] = useState();
+  const reseveArray = reserveData;
+  const [weekendsVisible, setWeekendsVisible] = useState(true)
+  const [currentEvents, setCurrentEvents] = useState([]);
 
-      console.log("LastDayOfMonth : " + LastDayOfMonth(2025, 2))
+  //const  [testEvent, setTestState] = useState({events: [reserveData.reserveData]});
+  const  [testEvent, setTestState] = useState({
+    events: [
+      [reserveData.reserveData]
+  ]
+});
+console.log("ReserveCalendar testEvent : " + JSON.stringify(testEvent));
+/* 
+  reserveData.map((reserve) => (
+    console.log("reserve :" + reserve)
+  )); */
+  console.log("reserveDataList 1111 : " + JSON.stringify(reserveDataList));
+  
+  function setData(){
+    console.log("ReserveCalendar reserveData 22222: " + JSON.stringify(reserveData));
+      setReserveDataList("bbb");
+  }
+  useEffect(() => {
+    console.log("ReserveCalendar reserveData 22222: : " + JSON.stringify(reserveData.reserveData));
+    setReserveDataList(reserveData);
+    }, []);
+  
+    console.log("reserveDataList excp : " + JSON.stringify(reserveDataList));
     
-    console.log('today.getDay() : ' + today.getDay());
-    console.log("month : " + month);
-    console.log("dayWeek : " + dayWeek);
-    console.log("endDay : " + endDay);
-    
-    const handleDateClick = (arg) => {
-        //return alert(arg.dateStr);
-      };
-      
+    function handleWeekendsToggle() {
+      setWeekendsVisible(!weekendsVisible)
+    }
+
+    function handleDateSelect(selectInfo) {
+      let title = prompt('Please enter a new title for your event')
+      let calendarApi = selectInfo.view.calendar
+  
+      calendarApi.unselect() // clear date selection
+  
+      if (title) {
+        calendarApi.addEvent({
+          id: createEventId(),
+          title,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay
+        })
+      }
+    }
+  
+    function handleEventClick(clickInfo) {
+      if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+        clickInfo.event.remove()
+      }
+    }
+    function handleEvents(events) {
+      setCurrentEvents(events)
+    }
+
+    console.log("todayStr : " +  new Date().toISOString().replace(/T.*$/, '') + 'T13:00:00');
       const handleSelectedDates = info => {
       console.log("info : " + JSON.stringify(info));
       console.log("moment start : " + moment(info.start).format('YYYY-MM-DD'));
@@ -115,65 +96,83 @@ export default function ReserveCalendar() {
       return false;
       	
       }
-  
-  
-  
 		startDate= startDate.format("YYYY-MM-DD");
 		endDate= endDate.format("YYYY-MM-DD");   
-        
-       /*  console.log("info : " + JSON.stringify(info));
-        alert("selected " + info.startStr + " to " + info.endStr);
-        const title = prompt("What's the name of the title");
-        console.log(info);
-        if (title != null) {
-          const newEvent = {
-            title,
-            start: info.startStr,
-            end: info.endStr
-          };
-          const setdata = [...testState.events, newEvent];
-          console.log("setdata : " + setdata);
-          setTestState({ events: setdata });
-          console.log("here", setdata);
-        } else {
-          console.log("nothing");
-        } */
+
       };
+      
+      function renderEventContent(eventInfo) {
+        return (
+          <>
+            <b>{eventInfo.timeText}</b>
+            <i>{eventInfo.event.title}</i>
+          </>
+        )
+      }
+      
+      const eventTimeFormat = [{
+        year: '0-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }]
+
+    
     
     return(
-        <div>      
-        <FullCalendar
-          schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-          ref={calendarComponentRef}
-          defaultView="dayGridMonth"
-          dateClick={handleDateClick}
-          displayEventTime={true}
-          header={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+        <div>
+          {console.log("reserveData inreturn : " + JSON.stringify({events: [reserveData.reserveData]}))}
+          <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
+          initialView='dayGridMonth'
+          editable={true}
           selectable={true}
-          plugins={[
-            dayGridPlugin,
-            interactionPlugin,
-            timeGridPlugin,
-            resourceTimeGridPlugin
-          ]}
-          eventClick={event => {
-            console.log(event.event._def.publicId);
-          }}
-          events={testState.events}
-          select={handleSelectedDates}
-          eventLimit={3}
-          showNonCurrentDates={false}
+          selectMirror={true}
+          dayMaxEvents={true}
           weekends={true}
+          /* initialEvents={INITIAL_EVENTS} */
+          initialEvents={{"events":[{"id":37,"title":"11","start":"2025-04-01T10:00:00","allDay":false}]}}
+        
+        /* events={{
+          events: [
+    { id: 1, title: "event 1", date: "2025-04-01" },
+    {
+      title: "event 2",
+      start: "2025-04-01",
+      end: "2025-04-05",
+      allDay: true,
+      HostName: "William"
+    }]
+      }} */
+          select={handleDateSelect}
+          eventContent={renderEventContent} // custom render function
+          eventClick={handleEventClick}
+          eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+          eventTimeFormat={{
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          }}
+          displayEventEnd={true}
+          /* you can update a remote database when these fire:
+          eventAdd={function(){}}
+          eventChange={function(){}}
+          eventRemove={function(){}}
+          */
         />
-        <div class="ui checkbox">
-          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
-          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
-          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
-          <input type="checkbox" class="hidden" readonly="" tabindex="0"/><label>09:00 ~ 10:00</label>
+        <div className="ui checkbox">
+          <input type="checkbox" className="hidden" readOnly="" tabIndex="0"/><label>09:00 ~ 10:00</label>
+          <input type="checkbox" className="hidden" readOnly="" tabIndex="0"/><label>09:00 ~ 10:00</label>
+          <input type="checkbox" className="hidden" readOnly="" tabIndex="0"/><label>09:00 ~ 10:00</label>
+          <input type="checkbox" className="hidden" readOnly="" tabIndex="0"/><label>09:00 ~ 10:00</label>
         </div>
         
 

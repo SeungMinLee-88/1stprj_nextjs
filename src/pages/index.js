@@ -91,7 +91,7 @@ export default function Home() {
       
       console.log("response.data.content : " + JSON.stringify(response.data.content));
       setboardList(response.data.content);
-      //console.log("response.data.content : " + JSON.stringify(response.data.content.boardTitle));
+      console.log("boardList : " + JSON.stringify(boardList));
     }).catch(function (error) {
       if (error.response) {
         // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
@@ -141,13 +141,13 @@ export default function Home() {
 
   useEffect(() => {
     getData();
-  }, [currentPage]);
+  }, []);
   
-  useEffect(() => {
+/*   useEffect(() => {
     setCurrentPage(1);
     getData();
   }, [searchKey, searchValue]);
-
+ */
     
   const router = useRouter();
   
@@ -156,6 +156,7 @@ export default function Home() {
     setGoUrl(url);
   } */
  console.log("goUrl : " + goUrl);
+ console.log("boardList except : " + JSON.stringify(boardList));
  if(goUrl === "BoardWrite")
  {
   return (

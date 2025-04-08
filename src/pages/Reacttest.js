@@ -1,49 +1,8 @@
 import { useReducer } from 'react';
+import { useEffect, useState } from "react";
 import AddTask from './AddTask.js';
 import TaskList from './TaskList.js';
 
-export default function Reacttest() {
-  const [tasks, dispatch] = useReducer(
-    tasksReducer,
-    initialTasks
-  );
-
-  function handleAddTask(text) {
-    dispatch({
-      type: 'added',
-      id: nextId++,
-      text: text,
-    });
-  }
-
-  function handleChangeTask(task) {
-    dispatch({
-      type: 'changed',
-      task: task
-    });
-  }
-
-  function handleDeleteTask(taskId) {
-    dispatch({
-      type: 'deleted',
-      id: taskId
-    });
-  }
-
-  return (
-    <>
-      <h1>Prague itinerary</h1>
-      <AddTask
-        onAddTask={handleAddTask}
-      />
-      <TaskList
-        tasks={tasks}
-        onChangeTask={handleChangeTask}
-        onDeleteTask={handleDeleteTask}
-      />
-    </>
-  );
-}
 
 function tasksReducer(tasks, action) {
   console.log("action.type : " + action.type);
@@ -75,9 +34,68 @@ function tasksReducer(tasks, action) {
   }
 }
 
+
+export default function Reacttest() {
+  const [tasks, dispatch] = useReducer(
+    tasksReducer,
+    initialTasks
+  );
+
+  function handleAddTask(text) {
+    dispatch({
+      type: 'added',
+      id: nextId++,
+      text: text,
+    });
+  }
+
+  function handleChangeTask(task) {
+    dispatch({
+      type: 'changed',
+      task: task
+    });
+  }
+
+  function handleDeleteTask(taskId) {
+    dispatch({
+      type: 'deleted',
+      id: taskId
+    });
+  }
+
+  return (
+    <>
+{/*       <h1>Prague itinerary</h1>
+      <AddTask
+        onAddTask={handleAddTask}
+      />
+      <TaskList
+        tasks={tasks}
+        onChangeTask={handleChangeTask}
+        onDeleteTask={handleDeleteTask}
+      /> */}
+       <Avatar initialUser={"111"} key={"222"} />
+    </>
+  );
+}
+
 let nextId = 3;
 const initialTasks = [
   { id: 0, text: 'Visit Kafka Museum', done: true },
   { id: 1, text: 'Watch a puppet show', done: false },
   { id: 2, text: 'Lennon Wall pic', done: false }
 ];
+
+
+// Avatar.jsx
+function Avatar({ initialUser }) {
+// I suppose you need this component to manage it's own state 
+// otherwise you can get rid of this useState altogether.
+ const [usertest, setusertest] = useState(initialUser);
+ console.log("usertest : " + JSON.stringify(usertest));
+ return usertest.avatar ? (
+   <img src={usertest.avatar} />
+ ) : (
+   <p>Loading...</p>
+ );
+}
