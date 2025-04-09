@@ -99,6 +99,7 @@ export default function Reserve() {
             ));
           } */
           
+            const times = [];
           for (var key in response.data[0]) {
             setreserveData({
               events: [{
@@ -121,13 +122,7 @@ export default function Reserve() {
                 for (var timeKeytimes in response.data[0][key][timeKey]["time"]) {
                   if(timeKeytimes === "time"){
                     console.log("timeKeytimes : " + timeKeytimes + " || response.data[0][timeKeytimes] :" + response.data[0][key][timeKey][timeKeytimes]["time"]);
-                    setreserveData({
-                      ...reserveData,
-                      events: [{
-                        ...reserveData.events,
-                        time: 2
-                      }]
-                    });
+                    times.push[response.data[0][key][timeKey][timeKeytimes]["time"]];
                   }
                 }
                 /* for (var timeKeyId in response.data[0][key][timeKey]) {
@@ -156,7 +151,14 @@ export default function Reserve() {
                 //console.log("response for : " + prop + " = " + obj[prop]);
             } */
         }
-          
+        console.log("times : " + JSON.stringify(times));
+        setreserveData({
+          ...reserveData,
+          events: [{
+            ...reserveData.events,
+            time: 2
+          }]
+        });
           /* response.data.map((res) => (
             //console.log("res : " + res.id)
             res.reserveTime.map((time) => (
