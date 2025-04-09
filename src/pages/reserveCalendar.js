@@ -9,12 +9,14 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 
-export default function ReserveCalendar({reserveData}) {
+
+export default function ReserveCalendar({initialData, reserveData}) {
   var moment = require('moment');
   console.log("ReserveCalendar reserveData : " + JSON.stringify(reserveData));
   //const [reserveDataList, setReserveDataList] = useState("aaa");
   
-  const [reserveDataList, setReserveDataList] = useState();
+  const [reserveDataList, setReserveDataList] = useState(reserveData);
+  const [testdata, settestdata] = useState(initialData);
   const reseveArray = reserveData;
   const [weekendsVisible, setWeekendsVisible] = useState(true)
   const [currentEvents, setCurrentEvents] = useState([]);
@@ -31,9 +33,9 @@ console.log("ReserveCalendar testEvent : " + JSON.stringify(testEvent));
     console.log("reserve :" + reserve)
   )); */
   console.log("reserveDataList 1111 : " + JSON.stringify(reserveDataList));
+  console.log("testdata 1111 : " + JSON.stringify(testdata));
   
   function setData(){
-    console.log("ReserveCalendar reserveData 22222: " + JSON.stringify(reserveData));
       setReserveDataList("bbb");
   }
   useEffect(() => {

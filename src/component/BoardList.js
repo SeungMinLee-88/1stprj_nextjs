@@ -109,12 +109,17 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
         />
    </div>
       <div>
+      {boardList.map((board) => (
+        <li key={board.id}>{board.id}
+        </li>
+      ))}
        <List divided relaxed>
         {/* {  if(boardList.length === 0){
     return <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}><h1>No Content</h1></div>
   }} */}
    {/* <ListItem href="/board/detail/${board.id}"  key={board.id} > */}
    {/* <Link href="/board/detail/[id]" as={`/board/detail/${board.id}`}> */}
+
           {boardList.map((board) => (
            
            <ListItem href={`/board/detail/${board.id}`}  key={board.id} >
