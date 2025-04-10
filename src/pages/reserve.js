@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Axios from "axios";
 import ReserveCalendar from "./reserveCalendar";
+import ReserveForm from "./reserveForm";
 
 /* import "@fullcalendar/core/main.css";
 import "@fullcalendar/daygrid/main.css";
@@ -17,35 +18,35 @@ const initialTasks = {
     {
       id: 2,
       title: "event 2",
-      start: "2025-04-05",
-      end: "2025-04-05",
-      allDay: true,
+      start: "2025-04-01T10:00:00",
+      end: "2025-04-01T11:00:00",
+      allDay: false,
       HostName: "William"
     },
     {
       id: 3,
       title: "event 3",
-      start: "2025-04-08",
-      end: "2025-04-08",
-      allDay: true
+      start: "2025-04-01T13:00:00",
+      end: "2025-04-01T15:00:00",
+      allDay: false
     },
     {
       id: 4,
       title: "event 4",
-      start: "2025-04-11",
-      end: "2025-04-11",
-      allDay: true
+      start: "2025-04-01T16:00:00",
+      end: "2025-04-01T17:00:00",
+      allDay: false
     }
   ]}
 ;
+const times = [];
+const reserveList = [];
+const reserveTotalList = [];
 export default function Reserve() {
-    const [reserveData, setreserveData] = useState({
-      events: [
-        { id: 1, title: "event 1", date: "2025-04-03", time: "11111" }]
-      });
+    const [reserveData, setreserveData] = useState([]);
     const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
-    
+
     async function getData() {
       await Axios.get(`http://localhost:8090/reserve/reservelist`, {
           headers: {
@@ -53,11 +54,11 @@ export default function Reserve() {
             access: localStorage.getItem("access") 
           },
           params: {
-            reserveDate: 20250401
+            reserveDate: 202504
           },
         }
       ).then((response, error) => {
-          console.log("response.data[0] : " + JSON.stringify(response.data[0]));
+         /*  console.log("response.data[0] : " + JSON.stringify(response.data[0]));
           console.log("response.data[0] : " + response.data[0]);
           console.log("=====================================================");
           console.log("response.data : " + JSON.stringify(response.data[0]["id"]));
@@ -66,7 +67,7 @@ export default function Reserve() {
           console.log("=====================================================");
           
           //start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-          console.log("response.data length : " + response.data.length)
+          console.log("response.data length : " + response.data.length) */
           
           var validation_messages = {
             "key_1": {
@@ -99,140 +100,136 @@ export default function Reserve() {
             ));
           } */
           
-            const times = [];
-          for (var key in response.data[0]) {
-            setreserveData({
-              events: [{
-                id: response.data[0]["id"],
-                title: response.data[0]["reserveReason"],
-                start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-                end: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-                time: '0',
-                allDay: false
-              }]}) 
-            
-            // skip loop if the property is from prototype
-            if (!response.data[0].hasOwnProperty(key)) continue;
-            //console.log("response for key : " + key);
-            console.log("response for key : " + key + " || response.data[0][key] :" + response.data[0][key]);
-            
-            if(key === "reserveTime"){
-              for (var timeKey in response.data[0][key]) {
-                console.log("timeKey : " + timeKey + " || response.data[0][timeKey] :" + response.data[0][key][timeKey]["time"]);
-                for (var timeKeytimes in response.data[0][key][timeKey]["time"]) {
-                  if(timeKeytimes === "time"){
-                    console.log("timeKeytimes : " + timeKeytimes + " || response.data[0][timeKeytimes] :" + response.data[0][key][timeKey][timeKeytimes]["time"]);
-                    times.push[response.data[0][key][timeKey][timeKeytimes]["time"]];
+          console.log("moment : " + moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00");
+          
+          for (var responseKey in response.data) {
+            //console.log("responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]["reserveTime"]));
+            for (var timeKey in response.data[responseKey]["reserveTime"]) {
+              reserveTotalList.push(
+                {
+                    id: response.data[responseKey]["id"],
+                    title: response.data[responseKey]["reserveReason"],
+                    start: moment(response.data[responseKey]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[responseKey]["reserveTime"][0]["time"]["time"]+":00:00",
+                    end: moment(response.data[responseKey]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[responseKey]["reserveTime"][0]["time"]["time"]+":00:00",
+                    time: response.data[responseKey]["reserveTime"][timeKey]["time"]["time"],
+                    allDay: false
+                  }
+                );
+            }
+          }
+
+          for (var timeKey in response.data[0]["reserveTime"]) {
+            //console.log("timeKey[timeKey] :" + response.data[0]["reserveTime"][timeKey]["time"]["time"]);
+          }
+          
+          for (var timeKey in response.data[0]["reserveTime"]) {
+            //console.log("timeKey loop");
+            reserveList.push(
+              {
+                  id: response.data[0]["id"],
+                  title: response.data[0]["reserveReason"],
+                  start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
+                  end: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
+                  time: response.data[0]["reserveTime"][timeKey]["time"]["time"],
+                  allDay: false
+                }
+              );
+            for (var key in response.data[0]) {
+
+              //console.log("response.data loop");
+              //console.log("for : " + JSON.stringify(reserveData));
+              /* setreserveData(
+                ...reserveData,
+                [{
+                  id: response.data[0]["id"],
+                  title: response.data[0]["reserveReason"],
+                  start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
+                  end: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
+                  time: response.data[0]["reserveTime"][timeKey]["time"]["time"],
+                  allDay: false
+                }]
+              ); */
+              
+              if (!response.data[0].hasOwnProperty(key)) continue;
+              //console.log("response for key : " + key);
+              //console.log("response for key : " + key + " || response.data[0][key] :" + response.data[0][key]);
+              
+  /*             if(key === "reserveTime"){
+                for (var timeKey in response.data[0][key]) {
+                  console.log("timeKey : " + timeKey + " || response.data[0][timeKey] :" + response.data[0][key][timeKey]["time"]);
+                  for (var timeKeytimes in response.data[0][key][timeKey]["time"]) {
+                    if(timeKeytimes === "time"){
+                      console.log("timeKeytimes : " + timeKeytimes + " || response.data[0][timeKeytimes] :" + response.data[0][key][timeKey][timeKeytimes]["time"]);
+                      times.push(response.data[0][key][timeKey][timeKeytimes]["time"]);
+                    }
                   }
                 }
-                /* for (var timeKeyId in response.data[0][key][timeKey]) {
-                  console.log("timeKeyId : " + timeKeyId + " || response.data[0][timeKeyId] :" + response.data[0][key][timeKey][timeKeyId]);
-                  
-                    if(timeKeyId === "time"){
-                      //console.log("time :" + response.data[0][key][timeKey][timeKeyId]);
-                      setreserveData({
-                        ...reserveData,
-                        events: {
-                          ...reserveData.events,
-                          time: 3
-                        }
-                      });
-                    }
-                } */
-              }
-            }
-            
-            /* var obj = response.data[0][key]; */
-            /* for (var prop in obj) {
-                // skip loop if the property is from prototype
-                if (!obj.hasOwnProperty(prop)) continue;
-        
-                // your code
-                //console.log("response for : " + prop + " = " + obj[prop]);
-            } */
+              } */
+          }
         }
-        console.log("times : " + JSON.stringify(times));
-        setreserveData({
-          ...reserveData,
-          events: [{
-            ...reserveData.events,
-            time: 2
-          }]
-        });
-          /* response.data.map((res) => (
-            //console.log("res : " + res.id)
-            res.reserveTime.map((time) => (
-              console.log("res.time : " + time.id)
-            ))
-          )); */
-          /* setreserveData({
-            events: [{
-              id: response.data[0]["id"],
-              title: response.data[0]["reserveReason"],
-              start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-              end: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-              allDay: false
-            },
-            {
-              id: "22",
-              title: "222",
-              start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-              end: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-              allDay: false
-            }]}
-          ); */
-          //console.log("response.data : " + JSON.stringify(response.data));
-          
-          //start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
-          
-/*           setreserveData("12312312"); */
-          
+        //console.log("reserveList : " + JSON.stringify(reserveList));
+        //console.log("reserveTotalList : " + JSON.stringify(reserveTotalList));
+        //console.log("reserveTotalList length : " + reserveTotalList.length);
+
+        setreserveData(reserveTotalList);
           
         }).catch(function (error) {
-/*         console.log("error.response.data : " + error.response.data);
-        console.log("error.response.status : " + error.response.status);
-        console.log("error.response.headers : " + JSON.stringify(error.response.headers)); */
+
         });
     }
-    console.log("Reserve initialTasks : " + JSON.stringify(initialTasks));
-    console.log("reserveData : " + JSON.stringify(reserveData));
-    console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
     
-    const  [testEvent, setTestState] = useState({
-        events: [
-          {"id":1,"title":"event 1","date":"2025-04-01"},{"id":2,"title":"event 2","start":"2025-04-01","end":"2025-04-05","allDay":true,"HostName":"William"},{"id":3,"title":"event 3","start":"2025-04-05","end":"2025-04-07","allDay":true},{"id":4,"title":"event 4","start":"2025-04-05","end":"2025-04-07","allDay":true}]
-      
-    });
+    //console.log("reserveData : " + JSON.stringify(reserveData));
+   // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
     
     useEffect(() => {
         getData();
-      }, []);
-      
-      function handleTime(e) {
-        setreserveData({
+        console.log("times 222 : " + JSON.stringify(times));
+/*         setreserveData({
           ...reserveData,
           events: [{
             ...reserveData.events,
-            time: e.target.value
+            time: times
           }]
-        });
-      }
+        }); */
+      }, []);
       
-      console.log("Reserve reserveData except func : " + JSON.stringify(reserveData));
-      console.log("Reserve reserveData except func : " + JSON.stringify(reserveData));
+      const [selectDate, setSelectDate] = useState("");
+      const handleSelectedDates = info => {
+        console.log("info : " + JSON.stringify(info));
+        console.log("moment start : " + moment(info.start).format('YYYY-MM-DD'));
+  
+        var  startDate = moment(info.start);
+        console.log("startDate : " + startDate);
+        var endDate = moment(info.end);
+        const date = startDate.clone();
+        var isWeekend = false;
+        
+        while (date.isBefore(endDate)) {
+          if (date.isoWeekday() == 6 || date.isoWeekday() == 7) {
+            isWeekend = true;
+          }
+          date.add(1, 'day');
+        }
+        if (isWeekend) {
+        alert('can\'t add event - weekend');
+        return false;
+        }
+        setSelectDate(startDate.format('YYYY-MM-DD'));
+      }
+      //console.log("Reserve reserveData except func : " + JSON.stringify(reserveData));
         return(
         <div>
-          <label>
+{/*       <label>
         City:
         <input
           value={reserveData.events[0].time}
           onChange={handleTime}
         />
-      </label>
-        {/* <ReserveCalendar initialData ={"aaa"} reserveData={reserveData}  key={"111"} /> */}
-        {/* <Avatar reserveData={reserveData} setreserveData={setreserveData} /> */}
+      </label> */}
+        {/* <ReserveCalendar reserveData={reserveData} /> */}
+        <ReserveForm selectDate={selectDate} />
 
-        <FullCalendar
+      <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       headerToolbar={{
         left: 'prev,next today',
@@ -240,12 +237,13 @@ export default function Reserve() {
         right: 'dayGridMonth,timeGridWeek,timeGridDay'
       }}
       initialView='dayGridMonth'
+      select={handleSelectedDates}
       editable={true}
       selectable={true}
       selectMirror={true}
       dayMaxEvents={true}
       weekends={true}
-      events={reserveData}
+      events={{events: reserveData}}
       eventTimeFormat={{
         hour: '2-digit',
         minute: '2-digit',

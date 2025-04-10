@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+let nextId = 0;
 export default function Form() {
   const [person, setPerson] = useState({
     name: 'Niki de Saint Phalle',
@@ -9,6 +10,8 @@ export default function Form() {
       image: 'https://i.imgur.com/Sd1AgUOm.jpg',
     }]
   });
+  const [name, setName] = useState('');
+  const [artists, setArtists] = useState([]);
 
   function handleNameChange(e) {
     setPerson({
@@ -50,6 +53,22 @@ console.log("person : " + JSON.stringify(person))
 console.log("person artwork city : " + JSON.stringify(person.artwork[0].city))
   return (
     <>
+    <h1>Inspiring sculptors:</h1>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <button onClick={() => {
+        setArtists([
+          ...artists,
+          { id: nextId++, name: name }
+        ]);
+      }}>Add</button>
+      <ul>
+        {artists.map(artist => (
+          <li key={artist.id}>{artist.name}</li>
+        ))}
+      </ul>
       <label>
         Name:
         <input
