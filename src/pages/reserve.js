@@ -180,20 +180,14 @@ export default function Reserve() {
     
     //console.log("reserveData : " + JSON.stringify(reserveData));
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
-    
+   const [selectDate, setSelectDate] = useState("");
     useEffect(() => {
         getData();
         console.log("times 222 : " + JSON.stringify(times));
-/*         setreserveData({
-          ...reserveData,
-          events: [{
-            ...reserveData.events,
-            time: times
-          }]
-        }); */
-      }, []);
+      }, [selectDate]);
       
-      const [selectDate, setSelectDate] = useState("");
+      
+      const [isVisible, setisVisible] = useState(true);
       const handleSelectedDates = info => {
         console.log("info : " + JSON.stringify(info));
         console.log("moment start : " + moment(info.start).format('YYYY-MM-DD'));
@@ -214,7 +208,9 @@ export default function Reserve() {
         alert('can\'t add event - weekend');
         return false;
         }
-        setSelectDate(startDate.format('YYYY-MM-DD'));
+        setSelectDate(startDate.format('YYYYMMDD'));
+        console.log("SelectDate : " + selectDate);
+        setisVisible(true);
       }
       //console.log("Reserve reserveData except func : " + JSON.stringify(reserveData));
         return(
@@ -227,8 +223,10 @@ export default function Reserve() {
         />
       </label> */}
         {/* <ReserveCalendar reserveData={reserveData} /> */}
-        <ReserveForm selectDate={selectDate} />
-
+        {isVisible && (
+      <ReserveForm visible={isVisible} selectDate={selectDate} />
+    )}
+      
       <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       headerToolbar={{

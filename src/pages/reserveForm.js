@@ -1,12 +1,13 @@
 import React from "react";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Axios from "axios";
 import pkg from 'semantic-ui-react/package.json'
 import { Checkbox, Segment } from 'semantic-ui-react' 
 
 export default function ReserveForm({ selectDate }) {
   console.log("ReserveForm selectDate : " + JSON.stringify(selectDate));
-   const [usertest, setusertest] = useState(selectDate);
+   const [getDate, setgetDate] = useState(selectDate);
    const [time, setTime] = useState([
   { id:'1', time:'9' },
   { id:'2', time:'10' },
@@ -17,11 +18,50 @@ export default function ReserveForm({ selectDate }) {
   { id:'7', time:'16' },
   { id:'8', time:'17' },
 ]);
+
+async function getData() {
+  console.log("ReserveForm call getData");
+  await Axios.get(`http://localhost:8090/reserve/reserveTimeList`, {
+      headers: {
+        "Content-Type": "application/json", 
+        access: localStorage.getItem("access") 
+      },
+      params: {
+        reserveDate: selectDate
+      },
+    }
+  ).then((response, error) => {
+    console.log("response.data : " + JSON.stringify(response));
+  }).catch(function (error) {
+    console.log("error : " + JSON.stringify(error));
+
+  });
+}
+  
+useEffect(() => {
+    getData();
+  }, );
    
        console.log("time : " + JSON.stringify(time));
    return(
 <div>
+  
 <div className="ui compact segment">
+  <div className="ui fitted checkbox">
+    <input type="checkbox" className="" readOnly="" tabIndex="0"/>
+    <label>
+    </label>
+  </div>
+</div>
+      
+<div className="ui compact segment">
+  <div className="ui fitted checkbox">
+    <input type="checkbox" className="" readOnly="" tabIndex="0"/>
+    <label>
+    </label>
+  </div>
+</div>
+<div style={{display: 'flex'}}>
 {time.map((times) => (
 /*   <div>
         <li key={times.id}>
@@ -31,23 +71,18 @@ export default function ReserveForm({ selectDate }) {
           {times.time}
         </li>
         </div> */
-
-        <div className="ui fitted checkbox" style={{padding:10}}>
-          <input type="checkbox" className="" readOnly="" tabIndex="0"/> {times.time}
+       
+    <div key={times.id} className="ui compact segment">
+        <div className="ui fitted checkbox">
+          <input type="checkbox" className="" readOnly="" tabIndex={times.id}/>
           <label>
-          {times.time}
           </label>
           </div>
+      </div>
 
       ))}
-                </div>
-  <div className="ui compact segment">
-    <div className="ui fitted checkbox">
-      <input type="checkbox" className="" readOnly="" tabIndex="0"/>
-      <label>
-      </label>
-      </div>
-      </div>
+</div>
+
   </div>
 
 )
