@@ -1,113 +1,81 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
+import AddTask from './AddTask.js';
+import TaskList from './TaskList.js';
 
-let nextId = 0;
-export default function Form() {
-  const [person, setPerson] = useState({
-    name: 'Niki de Saint Phalle',
-    artwork: [{
-      title: 'Blue Nana',
-      city: 'Hamburg',
-      image: 'https://i.imgur.com/Sd1AgUOm.jpg',
-    }]
-  });
-  const [name, setName] = useState('');
-  const [artists, setArtists] = useState([]);
+export default function TaskApp() {
+  const [tasks, dispatch] = useReducer(
+    tasksReducer,
+    initialTasks
+  );
 
-  function handleNameChange(e) {
-    setPerson({
-      ...person,
-      name: e.target.value
+  function handleAddTask(text) {
+    dispatch({
+      type: 'added',
+      id: nextId++,
+      text: text,
+    });
+    console.log("tasks : " + JSON.stringify(tasks));
+  }
+
+  function handleChangeTask(task) {
+    dispatch({
+      type: 'changed',
+      task: task
     });
   }
 
-  function handleTitleChange(e) {
-    setPerson({
-      ...person,
-      artwork: {
-        ...person.artwork,
-        title: e.target.value
-      }
+  function handleDeleteTask(taskId) {
+    dispatch({
+      type: 'deleted',
+      id: taskId
     });
   }
 
-  function handleCityChange(e) {
-    setPerson({
-      ...person,
-      artwork: [{
-        ...person.artwork,
-        city: e.target.value
-      }]
-    });
-  }
-
-  function handleImageChange(e) {
-    setPerson({
-      ...person,
-      artwork: {
-        ...person.artwork,
-        image: e.target.value
-      }
-    });
-  }
-console.log("person : " + JSON.stringify(person))
-console.log("person artwork city : " + JSON.stringify(person.artwork[0].city))
   return (
     <>
-    <h1>Inspiring sculptors:</h1>
-      <input
-        value={name}
-        onChange={e => setName(e.target.value)}
+      <h1>Prague itinerary</h1>
+      <AddTask
+        onAddTask={handleAddTask}
       />
-      <button onClick={() => {
-        setArtists([
-          ...artists,
-          { id: nextId++, name: name }
-        ]);
-      }}>Add</button>
-      <ul>
-        {artists.map(artist => (
-          <li key={artist.id}>{artist.name}</li>
-        ))}
-      </ul>
-      <label>
-        Name:
-        <input
-          value={person.name}
-          onChange={handleNameChange}
-        />
-      </label>
-      <label>
-        Title:
-        <input
-          value={person.artwork.title}
-          onChange={handleTitleChange}
-        />
-      </label>
-      <label>
-        City:
-        <input
-          value={person.artwork[0].city}
-          onChange={handleCityChange}
-        />
-      </label>
-      <label>
-        Image:
-        <input
-          value={person.artwork.image}
-          onChange={handleImageChange}
-        />
-      </label>
-      <p>
-        <i>{person.artwork.title}</i>
-        {' by '}
-        {person.name}
-        <br />
-        (located in {person.artwork.city})
-      </p>
-      <img
-        src={person.artwork.image}
-        alt={person.artwork.title}
+      <TaskList
+        tasks={tasks}
+        onChangeTask={handleChangeTask}
+        onDeleteTask={handleDeleteTask}
       />
     </>
   );
 }
+
+function tasksReducer(tasks, action) {
+  switch (action.type) {
+    case 'added': {
+      return [...tasks, {
+        id: action.id,
+        text: action.text,
+        done: false
+      }];
+    }
+    case 'changed': {
+      return tasks.map(t => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case 'deleted': {
+      return tasks.filter(t => t.id !== action.id);
+    }
+    default: {
+      throw Error('Unknown action: ' + action.type);
+    }
+  }
+}
+
+let nextId = 3;
+const initialTasks = [
+  { id: 0, text: 'Visit Kafka Museum', done: true },
+  { id: 1, text: 'Watch a puppet show', done: false },
+  { id: 2, text: 'Lennon Wall pic', done: false }
+];

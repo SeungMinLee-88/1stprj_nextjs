@@ -54,10 +54,11 @@ export default function Reserve() {
             access: localStorage.getItem("access") 
           },
           params: {
-            reserveDate: 202504
+            reserveDate: 20250401
           },
         }
       ).then((response, error) => {
+        console.log("response.data[0] : " + JSON.stringify(response.data[0]));
          /*  console.log("response.data[0] : " + JSON.stringify(response.data[0]));
           console.log("response.data[0] : " + response.data[0]);
           console.log("=====================================================");
@@ -68,40 +69,7 @@ export default function Reserve() {
           
           //start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
           console.log("response.data length : " + response.data.length) */
-          
-          var validation_messages = {
-            "key_1": {
-                "your_name": "jimmy",
-                "your_msg": "hello world"
-            },
-            "key_2": {
-                "your_name": "billy",
-                "your_msg": "foo equals bar"
-            }
-        }
-          for (var key in validation_messages) {
-            // skip loop if the property is from prototype
-            if (!validation_messages.hasOwnProperty(key)) continue;
-        
-            var obj = validation_messages[key];
-            for (var prop in obj) {
-                // skip loop if the property is from prototype
-                if (!obj.hasOwnProperty(prop)) continue;
-        
-                // your code
-                console.log(prop + " = " + obj[prop]);
-            }
-        }
-          
-          /* for (var i in response.data[0]) {
-            console.log("response.data[i] : " + response.data[0][i]);
-              response.data[0][i].reserveTime.map((time) => (
-              console.log("res.time : " + time.id)
-            ));
-          } */
-          
           console.log("moment : " + moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00");
-          
           for (var responseKey in response.data) {
             //console.log("responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]["reserveTime"]));
             for (var timeKey in response.data[responseKey]["reserveTime"]) {
@@ -109,24 +77,25 @@ export default function Reserve() {
                 {
                     id: response.data[responseKey]["id"],
                     title: response.data[responseKey]["reserveReason"],
-                    start: moment(response.data[responseKey]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[responseKey]["reserveTime"][0]["time"]["time"]+":00:00",
-                    end: moment(response.data[responseKey]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[responseKey]["reserveTime"][0]["time"]["time"]+":00:00",
+                    reserveReason: response.data[responseKey]["reserveReason"],
+                    reserveDate: response.data[responseKey]["reserveDate"],
+                    hallId: response.data[responseKey]["hallId"],
+                    reservePeriod: response.data[responseKey]["reservePeriod"],
+                    start: moment(response.data[responseKey]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[responseKey]["reserveTime"][timeKey]["time"]["time"]+":00:00",
+                    end: moment(response.data[responseKey]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[responseKey]["reserveTime"][timeKey]["time"]["time"]+":00:00",
                     time: response.data[responseKey]["reserveTime"][timeKey]["time"]["time"],
+                    userId: response.data[responseKey]["userId"],
                     allDay: false
                   }
                 );
             }
           }
-
-          for (var timeKey in response.data[0]["reserveTime"]) {
-            //console.log("timeKey[timeKey] :" + response.data[0]["reserveTime"][timeKey]["time"]["time"]);
-          }
-          
           for (var timeKey in response.data[0]["reserveTime"]) {
             //console.log("timeKey loop");
             reserveList.push(
               {
                   id: response.data[0]["id"],
+                  reserveReason: response.data[0]["id"],
                   title: response.data[0]["reserveReason"],
                   start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
                   end: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
@@ -135,9 +104,6 @@ export default function Reserve() {
                 }
               );
             for (var key in response.data[0]) {
-
-              //console.log("response.data loop");
-              //console.log("for : " + JSON.stringify(reserveData));
               /* setreserveData(
                 ...reserveData,
                 [{
@@ -149,11 +115,7 @@ export default function Reserve() {
                   allDay: false
                 }]
               ); */
-              
               if (!response.data[0].hasOwnProperty(key)) continue;
-              //console.log("response for key : " + key);
-              //console.log("response for key : " + key + " || response.data[0][key] :" + response.data[0][key]);
-              
   /*             if(key === "reserveTime"){
                 for (var timeKey in response.data[0][key]) {
                   console.log("timeKey : " + timeKey + " || response.data[0][timeKey] :" + response.data[0][key][timeKey]["time"]);
@@ -167,24 +129,18 @@ export default function Reserve() {
               } */
           }
         }
-        //console.log("reserveList : " + JSON.stringify(reserveList));
-        //console.log("reserveTotalList : " + JSON.stringify(reserveTotalList));
-        //console.log("reserveTotalList length : " + reserveTotalList.length);
-
         setreserveData(reserveTotalList);
-          
         }).catch(function (error) {
-
         });
     }
-    
-    //console.log("reserveData : " + JSON.stringify(reserveData));
+    console.log("reserveData : " + JSON.stringify(reserveTotalList));
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
    const [selectDate, setSelectDate] = useState("");
+   const [formMode, setFormMode] = useState("");
     useEffect(() => {
         getData();
         console.log("times 222 : " + JSON.stringify(times));
-      }, [selectDate]);
+      }, []);
       
       
       const [isVisible, setisVisible] = useState(true);
@@ -209,22 +165,25 @@ export default function Reserve() {
         return false;
         }
         setSelectDate(startDate.format('YYYYMMDD'));
+        setFormMode("reserve");
         console.log("SelectDate : " + selectDate);
         setisVisible(true);
       }
-      //console.log("Reserve reserveData except func : " + JSON.stringify(reserveData));
+      const handleEventClick  = (arg) => {
+        //return alert(arg.dateStr);
+        console.log("arg id : " + JSON.stringify(arg.event.id));
+        console.log("arg title : " + JSON.stringify(arg.event.title));
+        console.log("arg reserveReason : " + JSON.stringify(arg.event.extendedProps.reserveReason));
+        console.log("arg reserveDate : " + JSON.stringify(arg.event.extendedProps.reserveDate));
+        console.log("arg userId : " + JSON.stringify(arg.event.extendedProps.userId));
+        console.log("arg hallId : " + JSON.stringify(arg.event.extendedProps.hallId));
+        console.log("arg reservePeriod : " + JSON.stringify(arg.event.extendedProps.reservePeriod));
+        
+      };
         return(
         <div>
-{/*       <label>
-        City:
-        <input
-          value={reserveData.events[0].time}
-          onChange={handleTime}
-        />
-      </label> */}
-        {/* <ReserveCalendar reserveData={reserveData} /> */}
         {isVisible && (
-      <ReserveForm visible={isVisible} selectDate={selectDate} />
+      <ReserveForm visible={isVisible} selectDate={selectDate} formMode={formMode} />
     )}
       
       <FullCalendar
@@ -236,7 +195,8 @@ export default function Reserve() {
       }}
       initialView='dayGridMonth'
       select={handleSelectedDates}
-      editable={true}
+      eventClick={handleEventClick}
+      editable={false}
       selectable={true}
       selectMirror={true}
       dayMaxEvents={true}
