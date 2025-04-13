@@ -5,21 +5,15 @@ import Axios from "axios";
 import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react' 
 
 
-export default function ReserveForm({ selectDate, formMode }) {
+export default function ReserveForm({ selectDate, reserveDetailId, formMode }) {
   console.log("call ReserveForm");
   console.log("ReserveForm selectDate : " + JSON.stringify(selectDate));
-   const [getDate, setgetDate] = useState(selectDate);
-   const [time, setTime] = useState([
-  { id:'1', time:'9' },
-  { id:'2', time:'10' },
-  { id:'3', time:'11' },
-  { id:'4', time:'13' },
-  { id:'5', time:'14' },
-  { id:'6', time:'15' },
-  { id:'7', time:'16' },
-  { id:'8', time:'17' },
-]);
-const [reserveTimes, setReserveTimes] = useState([]);
+  console.log("ReserveForm reserveDetailId : " + JSON.stringify(reserveDetailId));
+  console.log("ReserveForm formMode : " + JSON.stringify(formMode));
+  const [getDate, setgetDate] = useState(selectDate);
+  const [reserveTimes, setReserveTimes] = useState([]);
+  const [reserveDetail, setReserveDetail] = useState([]);
+  const [reserveDetailTimes, setReserveDetailTimes] = useState([]);
 
 async function getData() {
   console.log("ReserveForm call getData");
@@ -47,10 +41,71 @@ async function getData() {
 
   });
 }
+const reserveDetailList = [];
+const reserveDetailTimeList = [];
+async function getDetailData() {
+  console.log("ReserveForm call getData");
+  console.log("selectDate " + selectDate);
+  const reserveTimeList = [];
+  await Axios.get(`http://localhost:8090/reserve/reserveDetail/${reserveDetailId}`, {
+      headers: {
+        "Content-Type": "application/json", 
+        access: localStorage.getItem("access") 
+      },
+      params: {
+      },
+    }
+  ).then((response, error) => {
+    //console.log("getDetailData : " + JSON.stringify(response.data));
+    
+    reserveDetailList.push(
+      {
+        id : response.data["id"],
+        reserveReason : response.data["reserveReason"],
+        reserveDate : response.data["reserveDate"],
+        userId : response.data["userId"],
+        hallId : response.data["hallId"],
+        reservePeriod : response.data["reservePeriod"]
+      }
+    )
+    setReserveDetail(reserveDetailList);
+
+    
+    for (var responseKey in response.data) {
+      //console.log(responseKey + " : responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]));
+      //console.log("reserveTime :" + JSON.stringify(response.data["reserveTime"]));
+      //console.log("responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]["reserveTime"]));
+      
+      if(responseKey === "reserveTime"){
+        for (var timeKey in response.data["reserveTime"]) {
+          console.log("reserveTime timeKey " +  timeKey + " : " + JSON.stringify(response.data[responseKey][timeKey]));
+          
+          reserveDetailTimeList.push(
+            response.data[responseKey][timeKey]["time"]
+          )
+              
+  /*         console.log("reserveTime :" + JSON.stringify(response.data[responseKey][timeKey]));
+          reserveDetailTimeList.push(
+            {}
+          ) */
+        }
+      }
+    }
+    
+console.log("reserveDetailTimeList : " + JSON.stringify(reserveDetailTimeList));
+   
+  }).catch(function (error) {
+    console.log("error : " + JSON.stringify(error));
+
+  });
+}
+
+console.log("reserveDetail : " + JSON.stringify(reserveDetail));
 
 useEffect(() => {
   getData();
-}, [selectDate]);
+  formMode === "update" ? getDetailData() : "";
+}, [selectDate, reserveDetailId], formMode);
       /*  console.log("time : " + JSON.stringify(time));
        console.log("reserveTimes : " + JSON.stringify(reserveTimes)); */
        reserveTimes.map((reserveTime) => (
@@ -136,19 +191,19 @@ useEffect(() => {
           <FormGroup widths='equal'>
           <FormField>
           <label>reserveReason</label>
-          <input name='reserveReason' value={"test"} />
+          <input name='reserveReason' value={reserveDetail.reserveReason} />
           </FormField>
           <FormField>
           <label>reserveDate</label>
-          <input name='reserveDate' value={selectDate}  />
+          <input name='reserveDate' value={reserveDetail.reserveReason}  />
           </FormField>
           <FormField>
           <label>userId</label>
-          <input name='userId' value={1}/>
+          <input name='userId' value={reserveDetail.userId}/>
           </FormField>
           <FormField>
           <label>hallId</label>
-          <input name='hallId' value={1} />
+          <input name='hallId' value={reserveDetail.hallId} />
           </FormField>
           <FormField>
           <label>reservePeriod</label>

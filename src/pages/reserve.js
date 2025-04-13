@@ -169,6 +169,7 @@ export default function Reserve() {
         console.log("SelectDate : " + selectDate);
         setisVisible(true);
       }
+      const [reserveDetailId, setReserveDetailId] = useState("");
       const handleEventClick  = (arg) => {
         //return alert(arg.dateStr);
         console.log("arg id : " + JSON.stringify(arg.event.id));
@@ -178,12 +179,14 @@ export default function Reserve() {
         console.log("arg userId : " + JSON.stringify(arg.event.extendedProps.userId));
         console.log("arg hallId : " + JSON.stringify(arg.event.extendedProps.hallId));
         console.log("arg reservePeriod : " + JSON.stringify(arg.event.extendedProps.reservePeriod));
+        setReserveDetailId(arg.event.id);
+        setFormMode("update");
         
       };
         return(
         <div>
         {isVisible && (
-      <ReserveForm visible={isVisible} selectDate={selectDate} formMode={formMode} />
+      <ReserveForm visible={isVisible} selectDate={selectDate} reserveDetailId={reserveDetailId} formMode={formMode} />
     )}
       
       <FullCalendar
