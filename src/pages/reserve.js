@@ -179,6 +179,7 @@ export default function Reserve() {
         console.log("arg userId : " + JSON.stringify(arg.event.extendedProps.userId));
         console.log("arg hallId : " + JSON.stringify(arg.event.extendedProps.hallId));
         console.log("arg reservePeriod : " + JSON.stringify(arg.event.extendedProps.reservePeriod));
+        setSelectDate(arg.event.extendedProps.reserveDate);
         setReserveDetailId(arg.event.id);
         setFormMode("update");
         

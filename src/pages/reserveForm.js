@@ -43,6 +43,7 @@ async function getData() {
 }
 const reserveDetailList = [];
 const reserveDetailTimeList = [];
+const initialTasks = [];
 async function getDetailData() {
   console.log("ReserveForm call getData");
   console.log("selectDate " + selectDate);
@@ -58,7 +59,7 @@ async function getDetailData() {
   ).then((response, error) => {
     //console.log("getDetailData : " + JSON.stringify(response.data));
     
-    reserveDetailList.push(
+    setReserveDetail(
       {
         id : response.data["id"],
         reserveReason : response.data["reserveReason"],
@@ -68,7 +69,6 @@ async function getDetailData() {
         reservePeriod : response.data["reservePeriod"]
       }
     )
-    setReserveDetail(reserveDetailList);
 
     
     for (var responseKey in response.data) {
@@ -78,48 +78,41 @@ async function getDetailData() {
       
       if(responseKey === "reserveTime"){
         for (var timeKey in response.data["reserveTime"]) {
-          console.log("reserveTime timeKey " +  timeKey + " : " + JSON.stringify(response.data[responseKey][timeKey]));
-          
-          reserveDetailTimeList.push(
-            response.data[responseKey][timeKey]["time"]
-          )
-              
-  /*         console.log("reserveTime :" + JSON.stringify(response.data[responseKey][timeKey]));
-          reserveDetailTimeList.push(
-            {}
-          ) */
+          console.log("reserveTime timeKey time : " +  timeKey + " : " + JSON.stringify(response.data[responseKey][timeKey]["time"]));
+          reserveDetailTimes.push(response.data[responseKey][timeKey]["time"]["id"]
+          )   
         }
       }
     }
-    
-console.log("reserveDetailTimeList : " + JSON.stringify(reserveDetailTimeList));
-   
+
   }).catch(function (error) {
     console.log("error : " + JSON.stringify(error));
-
   });
 }
 
 console.log("reserveDetail : " + JSON.stringify(reserveDetail));
-
+console.log("reserveDetailTimes : " + JSON.stringify(reserveDetailTimes));
 useEffect(() => {
   getData();
   formMode === "update" ? getDetailData() : "";
 }, [selectDate, reserveDetailId], formMode);
-      /*  console.log("time : " + JSON.stringify(time));
-       console.log("reserveTimes : " + JSON.stringify(reserveTimes)); */
+
+       console.log("reserveTimes : " + JSON.stringify(reserveTimes));
        reserveTimes.map((reserveTime) => (
         reserveTime.reserved == true ? console.log(true) : console.log(false)
       ));
-      const initialTasks = [];
-    const [times, dispatch] = React.useReducer(reserveTimeReducer, initialTasks)
+    
+    const [times, dispatch] = React.useReducer(reserveTimeReducer, reserveDetailTimes)
     const [saveTimes, setSaveTimes] = useState([]);
     function reserveTimeReducer(times, action) {
       console.log("action : " + JSON.stringify(action))
+      
       switch (action.type) {
         case 'CHECK':
+          console.log("times CHECK : " + JSON.stringify(times))
           return [...times, action.timeId];
         case 'UNCHECK':
+          console.log("times UNCHECK : " + JSON.stringify(times))
           return times.filter(t => t !== action.timeId);
         default:
           throw new Error()
@@ -140,6 +133,7 @@ useEffect(() => {
     const router = useRouter();
 
     console.log("formMode : " + formMode);
+  
    return(
 <div>
 <div style={{display: 'flex'}}>
@@ -151,66 +145,97 @@ useEffect(() => {
             <label>
             </label>
             </div>
-            : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
+            : reserveTime.userId === "1" && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
           }
-          {console.log("call reserveTimes map")}
+          {console.log("reserveTime.userId : " + reserveTime.userId)}
         </div>
     /* )) */
 
       ))}
+      
+
 </div>
 
           <Form onSubmit={async evt=>{
+            console.log("call onSubmit");
+          //if(formMode === "update") return;
           evt.preventDefault();
+          const reserveId = evt.target.reserveId.value;
           const reserveReason = evt.target.reserveReason.value;
           const reserveDate = evt.target.reserveDate.value;
           const userId = evt.target.userId.value;
           const hallId = evt.target.hallId.value;
           const reserveTimeSave = times;
           const reservePeriod = times.length;
-          
-          const resp = await Axios.put(`http://localhost:8090/reserve/save`, {
-            reserveReason: reserveReason,
-            reserveDate: reserveDate,
-            userId: userId,
-            hallId: hallId,
-            reserveTimeSave: reserveTimeSave,
-            reservePeriod: reservePeriod
-          })
-          .then(function (response) {
-            console.log("response.data : " + JSON.stringify(response.data));
-          /* const board = await resp.json(); */
-          // router.push(`/reserve`);
-          router.refresh();
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+          console.log("reserveTimeSave : " + reserveTimeSave);
+          //return;
+          if(formMode === "reserve"){
+            const resp = await Axios.put(`http://localhost:8090/reserve/save`, {
+              reserveReason: reserveReason,
+              reserveDate: reserveDate,
+              userId: userId,
+              hallId: hallId,
+              reserveTimeSave: reserveTimeSave,
+              reservePeriod: reservePeriod
+            })
+            .then(function (response) {
+              console.log("response.data : " + JSON.stringify(response.data));
+            /* const board = await resp.json(); */
+            // router.push(`/reserve`);
+            //router.refresh();
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }else if(formMode === "update"){
+          const resp = await Axios.post(`http://localhost:8090/reserve/update`, 
+            {
+              id: reserveId,
+              reserveReason: reserveReason,
+              reserveDate: reserveDate,
+              userId: userId,
+              hallId: hallId,
+              reserveTimeSave: reserveTimeSave,
+              reservePeriod: reservePeriod
+            })
+            .then(function (response) {
+              console.log("response.data : " + JSON.stringify(response.data));
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+          }
 
         }}>
           <FormGroup widths='equal'>
           <FormField>
+          <label>reserveId</label>
+          <input name='reserveId' value={reserveDetail.id} onChange={e => setReserveDetail(e.target.value)} />
+          </FormField>
+          <FormField>
           <label>reserveReason</label>
-          <input name='reserveReason' value={reserveDetail.reserveReason} />
+          <input name='reserveReason' value={reserveDetail.reserveReason} onChange={e => setReserveDetail(e.target.value)} />
           </FormField>
           <FormField>
           <label>reserveDate</label>
-          <input name='reserveDate' value={reserveDetail.reserveReason}  />
+          <input name='reserveDate' value={reserveDetail.reserveDate} onChange={e => setReserveDetail(e.target.value)}  />
           </FormField>
           <FormField>
           <label>userId</label>
-          <input name='userId' value={reserveDetail.userId}/>
+          <input name='userId' value={reserveDetail.userId}  onChange={e => setReserveDetail(e.target.value)}/>
           </FormField>
           <FormField>
           <label>hallId</label>
-          <input name='hallId' value={reserveDetail.hallId} />
+          <input name='hallId' value={reserveDetail.hallId} onChange={e => setReserveDetail(e.target.value)} />
           </FormField>
           <FormField>
           <label>reservePeriod</label>
           <input name='reservePeriod' value={times.length} />
           </FormField>
           </FormGroup>
-          <button type="submit" className="ui button">reserve</button>
+          {formMode === "reserve" ? <button type="submit" className="ui button">reserve</button> 
+          : <button type="submit" className="ui button">update</button>}
+          
           </Form>
   </div>
 
