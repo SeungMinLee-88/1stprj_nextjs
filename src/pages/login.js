@@ -1,11 +1,15 @@
 import React, { findDOMNode, Component, PropTypes } from 'react';
 import Axios from "axios";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Button, Form } from "semantic-ui-react";
+import { UserContext } from './UserContext.js';
 
 
-export default function Login() {
+export default function Login({loginUserId, setLoginUserId}) {
+  /* const [loginUserId, setLoginUserId] = useState(""); */
   const router = useRouter();
+  console.log("Login loginUserId : " + loginUserId);
   function login() {
     console.log("call login");
 

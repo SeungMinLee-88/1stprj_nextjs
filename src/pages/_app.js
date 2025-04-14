@@ -2,12 +2,17 @@ import "../app/globals.css";
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import Footer from "../component/Footer";
 import Top from "../component/Top";
+import { useEffect, useState, useMemo } from "react";
+import { useContext } from 'react';
+import { UserContext } from './UserContext.js';
 
 export default function MyApp({ Component, pageProps }) {
+  const [loginUserId, setLoginUserId] = useState("contest");
+  const user = useContext(UserContext);
   return (
     <div style={{ width: 1000, margin: "0 auto" }}>
       <Top />
-      <Component {...pageProps} />
+      <Component {...pageProps} loginUserId={loginUserId} setLoginUserId={setLoginUserId} />
       <Footer />
     </div>
   );
