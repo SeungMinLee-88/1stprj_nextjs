@@ -8,6 +8,8 @@ import BoardWrite from "../component/BoardWrite";
 import styles from "../styles/Home.module.css";
 import Reacttest from "./Reacttest";
 import Error403 from "./403";
+import { useContext } from 'react';
+import { UserContext } from './UserContext.js';
 
 
 
@@ -33,6 +35,8 @@ export default function Home() {
   const [searchKey, setSearchKey] = useState("boardTitle");
   const [searchValue, setSearchValue] = useState("");
   const [goUrl, setGoUrl] = useState("/");
+  const username = useContext(UserContext);
+         console.log("Home username : " + username);
 
   const API_URL =
     `${process.env.NEXT_PUBLIC_API_URL}/pagingList`;
@@ -183,7 +187,7 @@ export default function Home() {
       <Reacttest />
       {/* <Button>Click Here</Button> */}
       
-      <button class="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>
+      <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>
 
     </div>
   );

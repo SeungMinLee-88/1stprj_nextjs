@@ -4,13 +4,8 @@ import { useRouter } from "next/navigation";
 import Axios from "axios";
 import ReserveCalendar from "./reserveCalendar";
 import ReserveForm from "./reserveForm";
-
-/* import "@fullcalendar/core/main.css";
-import "@fullcalendar/daygrid/main.css";
-
-import "@fullcalendar/core/main.css";
-import "@fullcalendar/daygrid/main.css"; */
-
+import { useContext } from 'react';
+import { UserContext } from './UserContext.js';
 
 const initialTasks = {
   events: [
@@ -46,6 +41,8 @@ export default function Reserve() {
     const [reserveData, setreserveData] = useState([]);
     const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
+      const username = useContext(UserContext);
+       console.log("Reserve username : " + username);
 
     async function getData() {
       await Axios.get(`http://localhost:8090/reserve/reservelist`, {
@@ -54,7 +51,7 @@ export default function Reserve() {
             access: localStorage.getItem("access") 
           },
           params: {
-            reserveDate: 20250401
+            reserveDate: 202504
           },
         }
       ).then((response, error) => {

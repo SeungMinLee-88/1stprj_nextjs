@@ -164,6 +164,7 @@ useEffect(() => {
           const reserveReason = evt.target.reserveReason.value;
           const reserveDate = evt.target.reserveDate.value;
           const userId = evt.target.userId.value;
+          const username = evt.target.username.value;
           const hallId = evt.target.hallId.value;
           const reserveTimeSave = times;
           const reservePeriod = times.length;
@@ -174,6 +175,7 @@ useEffect(() => {
               reserveReason: reserveReason,
               reserveDate: reserveDate,
               userId: userId,
+              username: username,
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
               reservePeriod: reservePeriod
@@ -223,6 +225,10 @@ useEffect(() => {
           <FormField>
           <label>userId</label>
           <input name='userId' value={reserveDetail.userId}  onChange={e => setReserveDetail(e.target.value)}/>
+          </FormField>
+          <FormField>
+          <label>username</label>
+          <input name='username' value={reserveDetail.username}  onChange={e => setReserveDetail(e.target.value)}/>
           </FormField>
           <FormField>
           <label>hallId</label>

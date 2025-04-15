@@ -8,12 +8,15 @@ import { UserContext } from './UserContext.js';
 
 export default function MyApp({ Component, pageProps }) {
   const [loginUserId, setLoginUserId] = useState("contest");
-  const user = useContext(UserContext);
+  const username = useContext(UserContext);
+  console.log("MyApp : " + loginUserId);
   return (
     <div style={{ width: 1000, margin: "0 auto" }}>
+      <UserContext value={loginUserId}>
       <Top />
-      <Component {...pageProps} loginUserId={loginUserId} setLoginUserId={setLoginUserId} />
+      <Component {...pageProps} setLoginUserId={setLoginUserId} />
       <Footer />
+      </UserContext>
     </div>
   );
 }
