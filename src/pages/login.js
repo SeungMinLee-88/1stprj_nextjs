@@ -51,6 +51,8 @@ export default function Login({setLoginUserId}) {
               localStorage.setItem("access", response.headers.access);
             }
             setLoginUserId(username);
+           
+            localStorage.setItem("username", username); 
           /* const board = await resp.json(); */
           //router.push(`/`);
           //router.refresh();

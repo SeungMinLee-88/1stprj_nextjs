@@ -36,7 +36,8 @@ export default function Home() {
   const [searchValue, setSearchValue] = useState("");
   const [goUrl, setGoUrl] = useState("/");
   const username = useContext(UserContext);
-         console.log("Home username : " + username);
+  console.log("Home username : " + username);
+
 
   const API_URL =
     `${process.env.NEXT_PUBLIC_API_URL}/pagingList`;

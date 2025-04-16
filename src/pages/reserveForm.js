@@ -5,8 +5,9 @@ import Axios from "axios";
 import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react' 
 
 
-export default function ReserveForm({ selectDate, reserveDetailId, formMode }) {
+export default function ReserveForm({ selectDate, reserveDetailId, formMode, userName }) {
   console.log("call ReserveForm");
+  console.log("ReserveForm userName : " + userName);
   console.log("ReserveForm selectDate : " + JSON.stringify(selectDate));
   console.log("ReserveForm reserveDetailId : " + JSON.stringify(reserveDetailId));
   console.log("ReserveForm formMode : " + JSON.stringify(formMode));
@@ -17,7 +18,7 @@ export default function ReserveForm({ selectDate, reserveDetailId, formMode }) {
 
 async function getData() {
   console.log("ReserveForm call getData");
-  console.log("selectDate " + selectDate);
+  console.log("selectDate : " + selectDate);
   const reserveTimeList = [];
   await Axios.get(`http://localhost:8090/reserve/timeList`, {
       headers: {
@@ -164,7 +165,7 @@ useEffect(() => {
           const reserveReason = evt.target.reserveReason.value;
           const reserveDate = evt.target.reserveDate.value;
           const userId = evt.target.userId.value;
-          const username = evt.target.username.value;
+          const userName = evt.target.userName.value;
           const hallId = evt.target.hallId.value;
           const reserveTimeSave = times;
           const reservePeriod = times.length;
@@ -175,7 +176,7 @@ useEffect(() => {
               reserveReason: reserveReason,
               reserveDate: reserveDate,
               userId: userId,
-              username: username,
+              userName: userName,
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
               reservePeriod: reservePeriod
@@ -220,7 +221,7 @@ useEffect(() => {
           </FormField>
           <FormField>
           <label>reserveDate</label>
-          <input name='reserveDate' value={reserveDetail.reserveDate} onChange={e => setReserveDetail(e.target.value)}  />
+          <input name='reserveDate' value={selectDate === "" ? reserveDetail.reserveDate : selectDate} onChange={e => setReserveDetail(e.target.value)}  />
           </FormField>
           <FormField>
           <label>userId</label>
@@ -228,7 +229,7 @@ useEffect(() => {
           </FormField>
           <FormField>
           <label>username</label>
-          <input name='username' value={reserveDetail.username}  onChange={e => setReserveDetail(e.target.value)}/>
+          <input name='userName' value={userName === "" ? reserveDetail.userName : userName}  onChange={e => setReserveDetail(e.target.value)}/>
           </FormField>
           <FormField>
           <label>hallId</label>
@@ -236,7 +237,7 @@ useEffect(() => {
           </FormField>
           <FormField>
           <label>reservePeriod</label>
-          <input name='reservePeriod' value={times.length} />
+          <input name='reservePeriod' value={times.length} onChange={e => setReserveDetail(e.target.value)} />
           </FormField>
           </FormGroup>
           {formMode === "reserve" ? <button type="submit" className="ui button">reserve</button> 

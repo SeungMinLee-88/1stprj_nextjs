@@ -6,8 +6,26 @@ import { useEffect, useState, useMemo } from "react";
 import { useContext } from 'react';
 import { UserContext } from './UserContext.js';
 
+
 export default function MyApp({ Component, pageProps }) {
-  const [loginUserId, setLoginUserId] = useState("contest");
+  const [loginUserId, setLoginUserId] = useState();
+  const [localusername, setlocalusername] = useState("");
+  console.log("loginUserId : " + loginUserId);
+  
+  //console.log("localStorage username : " + localStorage.getItem("username"));
+  //localStorage.setItem("username", loginUserId);
+  //window.sessionStorage.setItem("username",loginUserId);
+  /* console.log("localStorage username : " + localStorage.getItem("username")); */
+  //console.log("sessionStorage username : " + window.sessionStorage.getItem("username"));
+  
+  useEffect(() => {
+    //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
+    //localStorage.setItem("username", loginUserId); 
+    setLoginUserId(localStorage.getItem("username"));
+  }, [loginUserId]);
+  
+  console.log("localusername : " + localusername);
+  
   const username = useContext(UserContext);
   console.log("MyApp : " + loginUserId);
   return (

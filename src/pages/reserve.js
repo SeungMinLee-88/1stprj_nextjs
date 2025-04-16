@@ -38,6 +38,7 @@ const times = [];
 const reserveList = [];
 const reserveTotalList = [];
 export default function Reserve() {
+  //console.log("sessionStorage username : " + window.sessionStorage.getItem("username"));
     const [reserveData, setreserveData] = useState([]);
     const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
@@ -45,13 +46,14 @@ export default function Reserve() {
        console.log("Reserve username : " + username);
 
     async function getData() {
-      await Axios.get(`http://localhost:8090/reserve/reservelist`, {
+      await Axios.get(`http://localhost:8090/reserve/reserveList`, {
           headers: {
             "Content-Type": "application/json", 
             access: localStorage.getItem("access") 
           },
           params: {
-            reserveDate: 202504
+            reserveDate: 202504,
+            userName: username
           },
         }
       ).then((response, error) => {
@@ -133,6 +135,7 @@ export default function Reserve() {
     console.log("reserveData : " + JSON.stringify(reserveTotalList));
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
    const [selectDate, setSelectDate] = useState("");
+   const [userName, setUserName] = useState(username);
    const [formMode, setFormMode] = useState("");
     useEffect(() => {
         getData();
@@ -163,7 +166,7 @@ export default function Reserve() {
         }
         setSelectDate(startDate.format('YYYYMMDD'));
         setFormMode("reserve");
-        console.log("SelectDate : " + selectDate);
+        console.log("reserve SelectDate : " + selectDate);
         setisVisible(true);
       }
       const [reserveDetailId, setReserveDetailId] = useState("");
@@ -184,7 +187,8 @@ export default function Reserve() {
         return(
         <div>
         {isVisible && (
-      <ReserveForm visible={isVisible} selectDate={selectDate} reserveDetailId={reserveDetailId} formMode={formMode} />
+      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} formMode={formMode}
+      userName={userName} />
     )}
       
       <FullCalendar
