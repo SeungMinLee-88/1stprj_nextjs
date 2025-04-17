@@ -57,7 +57,7 @@ export default function Reserve() {
           },
         }
       ).then((response, error) => {
-        console.log("response.data[0] : " + JSON.stringify(response.data[0]));
+        /* console.log("response.data[0] : " + JSON.stringify(response.data[0])); */
          /*  console.log("response.data[0] : " + JSON.stringify(response.data[0]));
           console.log("response.data[0] : " + response.data[0]);
           console.log("=====================================================");
@@ -133,7 +133,7 @@ export default function Reserve() {
         }).catch(function (error) {
         });
     }
-    console.log("reserveData : " + JSON.stringify(reserveData));
+/*     console.log("reserveData : " + JSON.stringify(reserveData)); */
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
    const [selectDate, setSelectDate] = useState("");
    const [userName, setUserName] = useState(username);
@@ -146,8 +146,8 @@ export default function Reserve() {
       
       const [isVisible, setisVisible] = useState(true);
       const handleSelectedDates = info => {
-        console.log("info : " + JSON.stringify(info));
-        console.log("moment start : " + moment(info.start).format('YYYY-MM-DD'));
+/*         console.log("info : " + JSON.stringify(info));
+        console.log("moment start : " + moment(info.start).format('YYYY-MM-DD')); */
   
         var  startDate = moment(info.start);
         console.log("startDate : " + startDate);
@@ -166,29 +166,88 @@ export default function Reserve() {
         return false;
         }
         setSelectDate(startDate.format('YYYYMMDD'));
+        setReserveDetailId("");
         setFormMode("reserve");
-        console.log("reserve SelectDate : " + selectDate);
+/*         console.log("reserve SelectDate : " + selectDate); */
         setisVisible(true);
       }
+      
       const [reserveDetailId, setReserveDetailId] = useState("");
+      const [reserveDetail, setReserveDetail] = useState([]);
+      const [reserveDetailTimes, setReserveDetailTimes] = useState([]);
+      async function getDetailData(detailId) {
+        console.log("getDetailData detailId : " + detailId);
+        const reserveDetailList = [];
+        const reserveDetailTimeList = [];
+        console.log("ReserveForm call getDetailData");
+        console.log("selectDate " + selectDate);
+        const reserveTimeList = [];
+        await Axios.get(`http://localhost:8090/reserve/reserveDetail/${detailId}`, {
+            headers: {
+              "Content-Type": "application/json", 
+              access: localStorage.getItem("access") 
+            },
+            params: {
+            },
+          }
+        ).then((response, error) => {
+          //console.log("getDetailData : " + JSON.stringify(response.data));
+
+          reserveDetailList.push(
+            {
+              id : response.data["id"],
+              reserveReason : response.data["reserveReason"],
+              reserveDate : response.data["reserveDate"],
+              userId : response.data["userId"],
+              hallId : response.data["hallId"],
+              reservePeriod : response.data["reservePeriod"]
+            }
+          )
+      
+          setReserveDetailTimes([])
+          for (var responseKey in response.data) {
+            //console.log(responseKey + " : responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]));
+            //console.log("reserveTime :" + JSON.stringify(response.data["reserveTime"]));
+            //console.log("responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]["reserveTime"]));
+            
+            if(responseKey === "reserveTime"){
+              for (var timeKey in response.data["reserveTime"]) {
+                console.log("reserveTime timeKey time : " +  timeKey + " : " + JSON.stringify(response.data[responseKey][timeKey]["time"]));
+                reserveDetailTimeList.push(response.data[responseKey][timeKey]["time"]["id"]
+                )   
+              }
+            }
+          }
+          //reserveDetailTimes.push(reserveDetailTimeList)
+          console.log("afterPushDetailTimes : " + JSON.stringify(reserveDetailTimes));
+          setReserveDetail(reserveDetailList);
+          setReserveDetailTimes(reserveDetailTimeList);
+      
+        }).catch(function (error) {
+          console.log("error : " + JSON.stringify(error));
+        });
+      }
       const handleEventClick  = (arg) => {
         //return alert(arg.dateStr);
-        console.log("arg id : " + JSON.stringify(arg.event.id));
+/*         console.log("arg id : " + JSON.stringify(arg.event.id));
         console.log("arg title : " + JSON.stringify(arg.event.title));
         console.log("arg reserveReason : " + JSON.stringify(arg.event.extendedProps.reserveReason));
         console.log("arg reserveDate : " + JSON.stringify(arg.event.extendedProps.reserveDate));
         console.log("arg userId : " + JSON.stringify(arg.event.extendedProps.userId));
         console.log("arg hallId : " + JSON.stringify(arg.event.extendedProps.hallId));
-        console.log("arg reservePeriod : " + JSON.stringify(arg.event.extendedProps.reservePeriod));
+        console.log("arg reservePeriod : " + JSON.stringify(arg.event.extendedProps.reservePeriod)); */
+        
         setSelectDate(arg.event.extendedProps.reserveDate);
         setReserveDetailId(arg.event.id);
+        console.log("handleEventClick reserveDetailId : " + reserveDetailId);
+        getDetailData(arg.event.id);
         setFormMode("update");
         
       };
         return(
         <div>
         {isVisible && (
-      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} formMode={formMode}
+      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} reserveDetailTimes={reserveDetailTimes} formMode={formMode}
       userName={userName} />
     )}
       

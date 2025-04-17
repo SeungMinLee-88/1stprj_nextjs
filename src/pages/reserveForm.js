@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import Axios from "axios";
 import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react' 
 
-
-export default function ReserveForm({ selectDate, reserveDetailId, formMode, userName }) {
+var initialTimes = [];
+export default function ReserveForm({ selectDate, reserveDetailId, detailTimes, formMode, userName }) {
   console.log("call ReserveForm");
   console.log("ReserveForm userName : " + userName);
   console.log("ReserveForm selectDate : " + JSON.stringify(selectDate));
@@ -16,9 +16,11 @@ export default function ReserveForm({ selectDate, reserveDetailId, formMode, use
   const [reserveDetail, setReserveDetail] = useState([]);
   const [reserveDetailTimes, setReserveDetailTimes] = useState([]);
 
+
+  
+  console.log("detailTimes : " + JSON.stringify(detailTimes));
 async function getData() {
   console.log("ReserveForm call getData");
-  console.log("selectDate : " + selectDate);
   const reserveTimeList = [];
   await Axios.get(`http://localhost:8090/reserve/timeList`, {
       headers: {
@@ -31,7 +33,6 @@ async function getData() {
     }
   ).then((response, error) => {
     setgetDate(selectDate)
-    console.log("response.data : " + JSON.stringify(response.data));
 /*     for (var responseKey in response.data) {
       reserveTimeList.push(response.data[responseKey]["timeId"]);
     } */
@@ -44,9 +45,9 @@ async function getData() {
 }
 const reserveDetailList = [];
 const reserveDetailTimeList = [];
-const initialTasks = [];
+
 async function getDetailData() {
-  console.log("ReserveForm call getData");
+  console.log("ReserveForm call getDetailData");
   console.log("selectDate " + selectDate);
   const reserveTimeList = [];
   await Axios.get(`http://localhost:8090/reserve/reserveDetail/${reserveDetailId}`, {
@@ -58,9 +59,9 @@ async function getDetailData() {
       },
     }
   ).then((response, error) => {
-    //console.log("getDetailData : " + JSON.stringify(response.data));
+    console.log("getDetailData : " + JSON.stringify(response.data));
     
-    setReserveDetail(
+    reserveDetailList.push(
       {
         id : response.data["id"],
         reserveReason : response.data["reserveReason"],
@@ -80,11 +81,16 @@ async function getDetailData() {
       if(responseKey === "reserveTime"){
         for (var timeKey in response.data["reserveTime"]) {
           console.log("reserveTime timeKey time : " +  timeKey + " : " + JSON.stringify(response.data[responseKey][timeKey]["time"]));
-          reserveDetailTimes.push(response.data[responseKey][timeKey]["time"]["id"]
+          reserveDetailTimeList.push(response.data[responseKey][timeKey]["time"]["id"]
           )   
         }
       }
     }
+    //reserveDetailTimes.push(reserveDetailTimeList)
+    console.log("reserveDetailTimeList : " + JSON.stringify(reserveDetailTimes));
+    setReserveDetail(reserveDetailList);
+    setReserveDetailTimes(reserveDetailTimeList);
+    initialTimes=reserveDetailTimeList;
 
   }).catch(function (error) {
     console.log("error : " + JSON.stringify(error));
@@ -92,23 +98,37 @@ async function getDetailData() {
 }
 
 console.log("reserveDetail : " + JSON.stringify(reserveDetail));
-console.log("reserveDetailTimes : " + JSON.stringify(reserveDetailTimes));
+console.log("reserveDetailTimes11111 : " + JSON.stringify(reserveDetailTimes));
+console.log("initialTimes : " + JSON.stringify(initialTimes));
+
 useEffect(() => {
   getData();
   formMode === "update" ? getDetailData() : "";
+
+  console.log("useEffect initialTimes : " + JSON.stringify(initialTimes));
+  console.log("useEffect reserveDetailTimes11111 : " + JSON.stringify(reserveDetailTimes));
+  dispatch({
+    type: 'INITIAL',
+    timeId: initialTimes
+  })
+  
 }, [selectDate, reserveDetailId], formMode);
 
-       console.log("reserveTimes : " + JSON.stringify(reserveTimes));
+       /* console.log("reserveTimes : " + JSON.stringify(reserveTimes)); */
        reserveTimes.map((reserveTime) => (
         reserveTime.reserved == true ? console.log(true) : console.log(false)
       ));
     
-    const [times, dispatch] = React.useReducer(reserveTimeReducer, reserveDetailTimes)
+    console.log("set reserveTimeReducer");
+    const [times, dispatch] = React.useReducer(reserveTimeReducer, "");  
     const [saveTimes, setSaveTimes] = useState([]);
     function reserveTimeReducer(times, action) {
       console.log("action : " + JSON.stringify(action))
       
       switch (action.type) {
+        case 'INITIAL':
+          console.log("times INITIAL : " + JSON.stringify(times))
+          return [...times, action.timeId];
         case 'CHECK':
           console.log("times CHECK : " + JSON.stringify(times))
           return [...times, action.timeId];
