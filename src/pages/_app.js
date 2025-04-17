@@ -22,16 +22,16 @@ export default function MyApp({ Component, pageProps }) {
     //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
     //localStorage.setItem("username", loginUserId); 
     setLoginUserId(localStorage.getItem("username"));
+    //setLoginUserId(window.sessionStorage.getItem("username"));
   }, [loginUserId]);
   
-  console.log("localusername : " + localusername);
   
   const username = useContext(UserContext);
-  console.log("MyApp : " + loginUserId);
+  console.log("MyApp loginUserId : " + loginUserId);
   return (
     <div style={{ width: 1000, margin: "0 auto" }}>
       <UserContext value={loginUserId}>
-      <Top />
+      <Top setLoginUserId={setLoginUserId} />
       <Component {...pageProps} setLoginUserId={setLoginUserId} />
       <Footer />
       </UserContext>

@@ -127,7 +127,7 @@ useEffect(() => {
       e.target.checked ? actionType = "CHECK" : actionType = "UNCHECK";
       dispatch({ type: actionType, timeId: e.target.tabIndex})
     }
-    console.log("times : " + JSON.stringify(times));
+    console.log("handleTimeChange times : " + JSON.stringify(times));
     const [saveReserve, setSaveReserve] = useState([
       { reserveReason: '', reserveDate: '' ,userId: '', hallId: '', time: [], reservePeriod: '' }
     ]);
@@ -146,7 +146,7 @@ useEffect(() => {
             <label>
             </label>
             </div>
-            : reserveTime.userId === "1" && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
+            : reserveTime.userName === userName && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
           }
           {console.log("reserveTime.userId : " + reserveTime.userId)}
         </div>
@@ -197,6 +197,7 @@ useEffect(() => {
               reserveReason: reserveReason,
               reserveDate: reserveDate,
               userId: userId,
+              userName: userName,
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
               reservePeriod: reservePeriod

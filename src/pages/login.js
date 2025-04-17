@@ -53,6 +53,7 @@ export default function Login({setLoginUserId}) {
             setLoginUserId(username);
            
             localStorage.setItem("username", username); 
+            //window.sessionStorage.setItem("username", username); 
           /* const board = await resp.json(); */
           //router.push(`/`);
           //router.refresh();

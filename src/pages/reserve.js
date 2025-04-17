@@ -36,7 +36,7 @@ const initialTasks = {
 ;
 const times = [];
 const reserveList = [];
-const reserveTotalList = [];
+
 export default function Reserve() {
   //console.log("sessionStorage username : " + window.sessionStorage.getItem("username"));
     const [reserveData, setreserveData] = useState([]);
@@ -69,6 +69,7 @@ export default function Reserve() {
           //start: moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00",
           console.log("response.data length : " + response.data.length) */
           console.log("moment : " + moment(response.data[0]["reserveDate"]).format("YYYY-MM-DD")+"T"+response.data[0]["reserveTime"][0]["time"]["time"]+":00:00");
+          const reserveTotalList = [];
           for (var responseKey in response.data) {
             //console.log("responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]["reserveTime"]));
             for (var timeKey in response.data[responseKey]["reserveTime"]) {
@@ -132,7 +133,7 @@ export default function Reserve() {
         }).catch(function (error) {
         });
     }
-    console.log("reserveData : " + JSON.stringify(reserveTotalList));
+    console.log("reserveData : " + JSON.stringify(reserveData));
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
    const [selectDate, setSelectDate] = useState("");
    const [userName, setUserName] = useState(username);
