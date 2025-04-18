@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Axios from "axios";
 import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react' 
 
-var initialTimes = [];
+const initialTimes = [];
 export default function ReserveForm({ selectDate, reserveDetailId, detailTimes, formMode, userName }) {
   console.log("call ReserveForm");
   console.log("ReserveForm userName : " + userName);
@@ -38,6 +38,7 @@ async function getData() {
     } */
     
     setReserveTimes(response.data);
+    console.log("getData reserveTimes : " + JSON.stringify(reserveTimes))
   }).catch(function (error) {
     console.log("error : " + JSON.stringify(error));
 
@@ -61,7 +62,7 @@ async function getDetailData() {
   ).then((response, error) => {
     console.log("getDetailData : " + JSON.stringify(response.data));
     
-    reserveDetailList.push(
+    setReserveDetail(
       {
         id : response.data["id"],
         reserveReason : response.data["reserveReason"],
@@ -87,40 +88,37 @@ async function getDetailData() {
       }
     }
     //reserveDetailTimes.push(reserveDetailTimeList)
-    console.log("reserveDetailTimeList : " + JSON.stringify(reserveDetailTimes));
-    setReserveDetail(reserveDetailList);
-    setReserveDetailTimes(reserveDetailTimeList);
-    initialTimes=reserveDetailTimeList;
+    console.log("reserveDetailTimeList : " + JSON.stringify(reserveDetailTimeList));
+
+    setReserveDetailTimes(reserveDetailTimeList); 
+    dispatch({
+      type: 'INITIAL',
+      times: reserveDetailTimeList
+    })
+    
+    console.log("getDetailData reserveDetail : " + JSON.stringify(reserveDetail));
+    console.log("getDetailData reserveDetailTimes : " + JSON.stringify(reserveDetailTimes));
 
   }).catch(function (error) {
-    console.log("error : " + JSON.stringify(error));
+    console.log("error cause : " + JSON.stringify(error));
   });
 }
-
 console.log("reserveDetail : " + JSON.stringify(reserveDetail));
-console.log("reserveDetailTimes11111 : " + JSON.stringify(reserveDetailTimes));
+console.log("reserveDetailTimes : " + JSON.stringify(reserveDetailTimes));
 console.log("initialTimes : " + JSON.stringify(initialTimes));
 
-useEffect(() => {
-  getData();
-  formMode === "update" ? getDetailData() : "";
-
-  console.log("useEffect initialTimes : " + JSON.stringify(initialTimes));
-  console.log("useEffect reserveDetailTimes11111 : " + JSON.stringify(reserveDetailTimes));
-  dispatch({
-    type: 'INITIAL',
-    timeId: initialTimes
-  })
-  
-}, [selectDate, reserveDetailId], formMode);
-
-       /* console.log("reserveTimes : " + JSON.stringify(reserveTimes)); */
        reserveTimes.map((reserveTime) => (
         reserveTime.reserved == true ? console.log(true) : console.log(false)
       ));
     
     console.log("set reserveTimeReducer");
-    const [times, dispatch] = React.useReducer(reserveTimeReducer, "");  
+    const [times, dispatch] = React.useReducer(reserveTimeReducer, initialTimes);  
+    
+    useEffect(() => {
+      getData();
+      formMode === "update" ? getDetailData() : "";
+    }, [selectDate, reserveDetailId], formMode);
+    
     const [saveTimes, setSaveTimes] = useState([]);
     function reserveTimeReducer(times, action) {
       console.log("action : " + JSON.stringify(action))
@@ -128,7 +126,7 @@ useEffect(() => {
       switch (action.type) {
         case 'INITIAL':
           console.log("times INITIAL : " + JSON.stringify(times))
-          return [...times, action.timeId];
+          return action.times;
         case 'CHECK':
           console.log("times CHECK : " + JSON.stringify(times))
           return [...times, action.timeId];
@@ -168,15 +166,11 @@ useEffect(() => {
             </div>
             : reserveTime.userName === userName && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
           }
-          {console.log("reserveTime.userId : " + reserveTime.userId)}
+          {console.log("reserveTime.userName : " + reserveTime.userName)}
         </div>
     /* )) */
-
       ))}
-      
-
 </div>
-
           <Form onSubmit={async evt=>{
             console.log("call onSubmit");
           //if(formMode === "update") return;
@@ -229,7 +223,6 @@ useEffect(() => {
               console.log(error);
             });
           }
-
         }}>
           <FormGroup widths='equal'>
           <FormField>
@@ -242,7 +235,7 @@ useEffect(() => {
           </FormField>
           <FormField>
           <label>reserveDate</label>
-          <input name='reserveDate' value={selectDate === "" ? reserveDetail.reserveDate : selectDate} onChange={e => setReserveDetail(e.target.value)}  />
+          <input name='reserveDate' value={formMode === "update" ? reserveDetail.reserveDate : selectDate} onChange={e => setReserveDetail({...reserveDetail, reserveDate : e.target.value})}  />
           </FormField>
           <FormField>
           <label>userId</label>
