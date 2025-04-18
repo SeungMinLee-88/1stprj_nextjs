@@ -43,9 +43,12 @@ export default function Reserve() {
     const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
       const username = useContext(UserContext);
-       console.log("Reserve username : " + username);
+       console.log("Reserve sessusername : " + username);
+       const [userName, setUserName] = useState(username);
 
     async function getData() {
+      setUserName(username);
+      console.log("getData userName : " + userName);
       await Axios.get(`http://localhost:8090/reserve/reserveList`, {
           headers: {
             "Content-Type": "application/json", 
@@ -53,7 +56,7 @@ export default function Reserve() {
           },
           params: {
             reserveDate: 202504,
-            userName: username
+            userName: userName
           },
         }
       ).then((response, error) => {
@@ -133,17 +136,18 @@ export default function Reserve() {
         }).catch(function (error) {
         });
     }
+    
+    console.log("reserveData : " + JSON.stringify(reserveData)); 
+    
+    useEffect(() => {
+      getData();
+      console.log("times 222 : " + JSON.stringify(times));
+    }, [userName]);
 /*     console.log("reserveData : " + JSON.stringify(reserveData)); */
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
    const [selectDate, setSelectDate] = useState("");
-   const [userName, setUserName] = useState(username);
-   const [formMode, setFormMode] = useState("");
-    useEffect(() => {
-        getData();
-        console.log("times 222 : " + JSON.stringify(times));
-      }, []);
-      
-      
+
+   const [formMode, setFormMode] = useState(""); 
       const [isVisible, setisVisible] = useState(true);
       const handleSelectedDates = info => {
 /*         console.log("info : " + JSON.stringify(info));

@@ -26,6 +26,13 @@ export default function Gnb() {
     <Menu inverted>
       <Menu.Item name="home" active={activeItem === "home"} onClick={goLink} />
       <Menu.Item
+        name="Board"
+        active={activeItem === "Board"}
+        onClick={() => {
+          router.push("/Board");
+        }}
+      />
+      <Menu.Item
         name="about"
         active={activeItem === "about"}
         onClick={goLink}

@@ -21,13 +21,13 @@ export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
     //localStorage.setItem("username", loginUserId); 
-    setLoginUserId(localStorage.getItem("username"));
-    //setLoginUserId(window.sessionStorage.getItem("username"));
+    //setLoginUserId(localStorage.getItem("username"));
+    setLoginUserId(window.sessionStorage.getItem("username"));
   }, [loginUserId]);
   
   
   const username = useContext(UserContext);
-  console.log("MyApp loginUserId : " + loginUserId);
+  console.log("MyApp sessusername : " + loginUserId);
   return (
     <div style={{ width: 1000, margin: "0 auto" }}>
       <UserContext value={loginUserId}>

@@ -2,10 +2,9 @@ import Axios from "axios";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Divider, Header, Button } from "semantic-ui-react";
+import { Divider, Header } from "semantic-ui-react";
 import BoardList from "../component/BoardList";
 import BoardWrite from "../component/BoardWrite";
-import styles from "../styles/Home.module.css";
 import Reacttest from "./Reacttest";
 import Error403 from "./403";
 import { useContext } from 'react';
@@ -24,7 +23,7 @@ console.log("startPage : " + startPage);
 console.log("response.data.pageable.totalPages : " + response.data.totalPages);
  */
 
-export default function Home() {
+export default function Board() {
   const [boardList, setboardList] = useState([]);
   /* const [currentPage, setCurrentPage] = useState({
     currentPage: 1,
@@ -36,7 +35,7 @@ export default function Home() {
   const [searchValue, setSearchValue] = useState("");
   const [goUrl, setGoUrl] = useState("/");
   const username = useContext(UserContext);
-  console.log("Home sessusername : " + username);
+  console.log("Board sessusername : " + username);
 
 
   const API_URL =
