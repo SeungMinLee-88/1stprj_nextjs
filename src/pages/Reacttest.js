@@ -1,101 +1,37 @@
-import { useReducer } from 'react';
-import { useEffect, useState } from "react";
-import AddTask from './AddTask.js';
-import TaskList from './TaskList.js';
+import { useState, useRef } from 'react';
 
+export default function Reacttest () {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const ref = useRef(null);
 
-function tasksReducer(tasks, action) {
-  console.log("action.type : " + action.type);
-  console.log("tasks : " + JSON.stringify(tasks));
-  switch (action.type) {
-    
-    case 'added': {
-      return [...tasks, {
-        id: action.id,
-        text: action.text,
-        done: false
-      }];
-    }
-    case 'changed': {
-      return tasks.map(t => {
-        if (t.id === action.task.id) {
-          return action.task;
-        } else {
-          return t;
-        }
-      });
-    }
-    case 'deleted': {
-      return tasks.filter(t => t.id !== action.id);
-    }
-    default: {
-      throw Error('Unknown action: ' + action.type);
+  function handleClick() {
+    const nextIsPlaying = !isPlaying;
+    setIsPlaying(nextIsPlaying);
+
+    if (nextIsPlaying) {
+      ref.current.play();
+    } else {
+      ref.current.pause();
     }
   }
-}
 
-
-export default function Reacttest() {
-  const [tasks, dispatch] = useReducer(
-    tasksReducer,
-    initialTasks
-  );
-
-  function handleAddTask(text) {
-    dispatch({
-      type: 'added',
-      id: nextId++,
-      text: text,
-    });
-  }
-
-  function handleChangeTask(task) {
-    dispatch({
-      type: 'changed',
-      task: task
-    });
-  }
-
-  function handleDeleteTask(taskId) {
-    dispatch({
-      type: 'deleted',
-      id: taskId
-    });
-  }
-
+  console.log("isPlaying : " + isPlaying);
   return (
     <>
-{/*       <h1>Prague itinerary</h1>
-      <AddTask
-        onAddTask={handleAddTask}
-      />
-      <TaskList
-        tasks={tasks}
-        onChangeTask={handleChangeTask}
-        onDeleteTask={handleDeleteTask}
-      /> */}
-       <Avatar initialUser={"111"} key={"222"} />
+      <button onClick={handleClick}>
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
+      <video
+        width="250"
+        ref={ref}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      >
+        <source
+          src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+          type="video/mp4"
+        />
+      </video>
     </>
-  );
-}
-
-let nextId = 3;
-const initialTasks = [
-  { id: 0, text: 'Visit Kafka Museum', done: true },
-  { id: 1, text: 'Watch a puppet show', done: false },
-  { id: 2, text: 'Lennon Wall pic', done: false }
-];
-
-
-// Avatar.jsx
-function Avatar({ initialUser }) {
-// I suppose you need this component to manage it's own state 
-// otherwise you can get rid of this useState altogether.
- const [usertest, setusertest] = useState(initialUser);
- console.log("usertest : " + JSON.stringify(usertest));
- return usertest.avatar ? (
-   <img src={usertest.avatar} />
- ) : (
-   <p>Loading...</p>
- );
+  )
 }

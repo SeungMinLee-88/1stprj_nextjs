@@ -11,7 +11,11 @@ import Board from "../../../component/Board.js";
 
 export default function BoardDetail({ board, name }) {
   const router = useRouter();
-
+  console.log("BoardDetail board : " + JSON.stringify(board));
+  console.log("BoardDetail fileAttached : " + board["fileAttached"]);
+  if(board["fileAttached"] === 1){
+  console.log("BoardDetail boardFileDTO : " + JSON.stringify(board["boardFileDTO"]));
+  }
   if (router.isFallback) {
     return (
       <div style={{ padding: "100px 0" }}>
