@@ -21,12 +21,12 @@ export default function BoardWrite({ changeGoUrl }) {
     console.log(" e.target.files[0] : " +  JSON.stringify(e.target.files))
 /*State updates from the useState() and useReducer() Hooks don't support the second callback argument. To execute a side effect after rendering, declare it in the component body with useEffect().     
 setFileList({...fileList,fileList : Array.from(e.target.files)}, () => { console.log("callback fileList : " + JSON.stringify(fileList)) }) */
-    setFileList({...fileList,fileList: e.target.files[0]})
+    setFileList({files: e.target.files})
     setfileNameList(...fileNameList, e.target.value)
 /*     fileList.map((file) => {
       console.log(" file : " +  JSON.stringify(file))
     }); */
-    
+    console.log("fileList : " +  JSON.stringify(fileList))
     fileFormData.append('fileList', fileList);
     console.log("fileFormData : " + JSON.stringify(fileFormData));
   
