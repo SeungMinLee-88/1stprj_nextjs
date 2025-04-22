@@ -184,7 +184,6 @@ export default function Board() {
      startPage={startPage} endPage={endPage} />
            
       {/* <ItemList list={list.slice(9)} /> */}
-      <Reacttest />
       {/* <Button>Click Here</Button> */}
       
       <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>

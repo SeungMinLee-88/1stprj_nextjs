@@ -11,11 +11,7 @@ import Board from "../../../component/Board.js";
 
 export default function BoardDetail({ board, name }) {
   const router = useRouter();
-  console.log("BoardDetail board : " + JSON.stringify(board));
-  console.log("BoardDetail fileAttached : " + board["fileAttached"]);
-  if(board["fileAttached"] === 1){
-  console.log("BoardDetail boardFileDTO : " + JSON.stringify(board["boardFileDTO"]));
-  }
+  const [fileList, setFileList] = useState([]);
   if (router.isFallback) {
     return (
       <div style={{ padding: "100px 0" }}>
@@ -26,8 +22,30 @@ export default function BoardDetail({ board, name }) {
     );
   }
 
+  //console.log("BoardDetail fileAttached : " + board['fileAttached']);
+  console.log("BoardDetail response.data : " + JSON.stringify(board));
+  console.log("BoardDetail board : " + board);
+  
+
+  useEffect(() => {
+    console.log("BoardDetail fileAttached : " + board['fileAttached']);
+    if(board["fileAttached"] === 1){
+      console.log("BoardDetail boardFileDTO : " + JSON.stringify(board["boardFileDTO"]));
+      setFileList(board["boardFileDTO"]);
+      console.log("useEffect fileList : " + JSON.stringify(fileList));
+      }
+  }, []);
   return (
     <>
+    {board['fileAttached'] === 1 &&(
+      <div>
+      {fileList.map((files) => (
+        <div role="list" class="ui bulleted horizontal link list">
+          <a role="listitem" class="item">{files.originalFileName}</a>
+        </div>
+        ))}
+        </div>
+    )}
       {board && (
         <>
           <Head>
@@ -41,13 +59,31 @@ export default function BoardDetail({ board, name }) {
     </>
   );
 };
-
+/*   async function getData() {
+    await Axios.get(`http://localhost:8090/api/v1/board/31`, {
+        headers: {
+          "Content-Type": "application/json", 
+          access: localStorage.getItem("access") 
+        },
+        params: {
+        },
+      }
+    ).then((response, error) => {
+      console.log("BoardDetail response.data : " + JSON.stringify(response.data));
+      console.log("BoardDetail board : " + response.data);
+      console.log("BoardDetail fileAttached : " + response.data['fileAttached']);
+    }).catch(function (error) {
+    });
+}
+      useEffect(() => {
+        getData();
+      }, []); */
 export async function getStaticPaths() {
-  const apiUrl =  `http://localhost:8090/api/v1/board/pagingList`;
+  const apiUrl =  `http://localhost:8090/api/v1/board/list`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
   return {
-    paths: data.content.slice(0, 100).map((item) => ({
+    paths: data.slice(0, 100).map((item) => ({
       params: {
         id: item.id.toString(),
       },
