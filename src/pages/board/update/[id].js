@@ -1,0 +1,234 @@
+import React from "react";
+import Axios from "axios";
+import { useRouter } from "next/navigation";
+import { FormGroup, FormField, Form } from 'semantic-ui-react'
+import { useEffect, useState, useRef } from "react";
+
+
+export default function BoardUpdate({ board }) {
+  const router = useRouter();
+  if (router.isFallback) {
+    return (
+      <div style={{ padding: "100px 0" }}>
+        <Loader active inline="centered">
+          Loading
+        </Loader>
+      </div>
+    );
+  }
+  const [fileList, setFileList] = useState([]);
+  const [fileUpdateList, setFileUpdateList] = useState([]);
+  const [boardDetail, setBoardDetail] = useState([]);
+  console.log("board : " + JSON.stringify(board));
+  const fileChange = e => {
+    console.log("e.target.value : " +  e.target.value)
+    console.log("e.target.name : " +  e.target.name)
+    console.log("e.target.files : " +  JSON.stringify(e.target.files))
+    console.log("e.target.files[0] : " +  JSON.stringify(e.target.files[0]))
+    const newFiles = Array.from(e.target.files);
+    setFileUpdateList(newFiles)
+    console.log("fileUpdateList : " +  JSON.stringify(fileUpdateList))
+  };
+  
+  const renderFileList = () => (
+    <div>
+    {console.log("fileUpdateList : " + fileUpdateList.length)}
+        <li>
+          Attached File : {fileUpdateList.length}
+        </li>
+      <ol>
+
+        {[...fileUpdateList].map((f, i) => (
+            <li key={i}>{f.name} - {f.type}</li>
+        ))}
+    </ol>
+    </div>
+  )
+
+useEffect(() => {
+  board && setBoardDetail(board); setFileList(board["boardFileDTO"]);
+  console.log("useEffect fileList : " + JSON.stringify(fileList));
+  
+}, [fileList]);
+console.log("boardDetail : " +  JSON.stringify(boardDetail))
+      const onFormSubmit = async evt => {
+        evt.preventDefault(); 
+        console.log("prevent test");
+        console.log("onFormSubmit boardDetail : " +  JSON.stringify(boardDetail))
+          const boardId = boardDetail.id;
+          const boardWriter = boardDetail.boardWriter;
+          const boardPass = boardDetail.boardPass;
+          const boardTitle = boardDetail.boardTitle;
+          const boardContents = boardDetail.boardContents;
+          const formData = new FormData();
+          /* formData.append("boardFile", fileList); */
+          formData.append("boardId", boardId);
+          formData.append("boardTitle", boardTitle);
+          formData.append("boardPass", boardPass);
+          formData.append("boardWriter", boardWriter);
+          formData.append("boardContents", boardContents);
+          console.log("fileUpdateList.len : " + fileUpdateList.length);
+          if(fileUpdateList.length === 0) {
+            console.log("fileUpdateList.length === 0");
+            formData.append('boardFile', "");
+          }else{
+            console.log("fileUpdateList.length !== 0");
+            fileUpdateList.forEach((fileUpdate) => {
+            console.log("forEach : " + JSON.stringify(fileUpdate))
+            formData.append('boardFile', fileUpdate);
+           });
+          }
+          //formData.append("boardFile[]", fileList);
+          
+          console.log("formData : " + JSON.stringify(formData))
+    
+          const resp = await Axios.post("http://localhost:8090/api/v1/board/updateBoard",
+            formData,
+            {headers: {'Content-Type': 'multipart/form-data' }}
+/*             headers: {
+              'Content-Type': 'multipart/form-data'
+            }, */
+          )
+          .then(function (response) {
+            console.log("response.data : " + JSON.stringify(response.data));
+          /* const board = await resp.json(); */
+          //router.push(`/board/detail/${response.data.id}`);
+          //router.refresh();
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+          //router.refresh();
+    
+      };
+
+    const fileInputRef1 = useRef();
+    const fileFormRef1 = React.createRef();
+  return (
+    <>
+    {board['fileAttached'] === 1 &&(
+      <div>
+        <div role="list" className="ui bulleted horizontal link list">
+      {fileList.map((files) => (
+        
+          <div role="listitem" className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}
+
+            <i aria-hidden="true" class="delete icon" style={{hover: "background-color: #ff0000"}} onClick={() => alert(1)}></i>
+          
+          </div>
+        ))}
+        </div>
+      </div>
+    )}
+      {board && (
+       <div>
+       {/* <Form onSubmit={async evt=>{
+         evt.preventDefault();}}> */}
+       <Form onSubmit={onFormSubmit}>
+             <Form.Field>
+               <div ref={fileFormRef1}>
+             <input type="file" name='files' multiple onChange={fileChange} ref={fileInputRef1} hidden/>
+             {renderFileList()}
+             <button type="button"
+                 name = "fileBtn"
+                 className="ui icon left labeled button"
+                 labelposition="left"
+                 icon="file"
+                 onClick={() => fileInputRef1.current.click()}
+               ><i aria-hidden="true" className="file icon"></i>Choose File</button>
+               </div>
+           
+             </Form.Field>
+             <FormField>
+         <label>boardFile</label>
+
+         </FormField>
+
+         <FormGroup widths='equal'>
+         <FormField>
+         <label>boardWriter</label>
+         <input name='boardWriter' value={boardDetail.boardWriter} onChange={e => setBoardDetail({...boardDetail, boardWriter: e.target.value})} />
+         </FormField>
+         <FormField>
+         <label>boardPass</label>
+         <input name='boardPass' value={boardDetail.boardPass} onChange={e => setBoardDetail({...boardDetail, boardPass: e.target.value})} />
+         </FormField>
+         <FormField>
+         <label>boardTitle</label>
+         <input name='boardTitle' value={boardDetail.boardTitle} onChange={e => setBoardDetail({...boardDetail, boardTitle: e.target.value})} />
+         </FormField>
+         <FormField>
+         <label>boardContents</label>
+         <input name='boardContents' value={boardDetail.boardContents} onChange={e => setBoardDetail({...boardDetail, boardContents: e.target.value})} />
+         </FormField>
+
+           {/* <FormField label='An HTML <select>' control='select'>
+             <option value='male'>Male</option>
+             <option value='female'>Female</option>
+           </FormField> */}
+         </FormGroup>
+         <FormField label='boardContents' as="" control='textarea' rows='3' value={boardDetail.boardContents} />
+
+         {/* <FormField label='Write' control='button'>
+           HTML Button
+         </FormField> */}
+         <button type="submit" className="ui button">Write</button>
+       </Form>
+     <button className="ui button" onClick={() => changeGoUrl("/")}>List</button>
+     </div>
+      )}
+    </>
+  );
+};
+/*   async function getData() {
+    await Axios.get(`http://localhost:8090/api/v1/board/31`, {
+        headers: {
+          "Content-Type": "application/json", 
+          access: localStorage.getItem("access") 
+        },
+        params: {
+        },
+      }
+    ).then((response, error) => {
+      console.log("BoardDetail response.data : " + JSON.stringify(response.data));
+      console.log("BoardDetail board : " + response.data);
+      console.log("BoardDetail fileAttached : " + response.data['fileAttached']);
+    }).catch(function (error) {
+    });
+}
+      useEffect(() => {
+        getData();
+      }, []); */
+export async function getStaticPaths() {
+  const apiUrl =  `http://localhost:8090/api/v1/board/list`;
+  const res = await Axios.get(apiUrl);
+  const data = res.data;
+  return {
+    paths: data.slice(0, 100).map((item) => ({
+      params: {
+        id: item.id.toString(),
+      },
+    })),
+    fallback: true,
+  };
+/*   return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: 'blocking' //indicates the type of fallback
+} */
+}
+
+export async function getStaticProps(context) {
+  
+  console.log("call getStaticProps");
+  const id = context.params.id;
+  const apiUrl = `http://localhost:8090/api/v1/board/${id}`;
+  const res = await Axios.get(apiUrl);
+  const data = res.data;
+
+  return {
+    props: {
+      board: data,
+      name: process.env.name,
+    },
+  };
+}

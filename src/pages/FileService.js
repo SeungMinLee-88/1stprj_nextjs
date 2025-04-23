@@ -1,7 +1,7 @@
 import axios from "axios"
 import { Navigate, Route, Routes } from "react-router";
 import { BrowserRouter as Router } from "react-router-dom";
-const BASE_URL = "http://localhost:9090/board/upload"
+const BASE_URL = "http://localhost:9090/upload/1745197916007_111.png"
 
 import HeaderComponent from './HeaderComponent';
 import MyImagesComponent from './MyImagesComponent';

@@ -4,6 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { useEffect, useState } from "react";
+import { FileService } from '../../FileService';
 import { use } from 'react';
 
 import Board from "../../../component/Board.js";
@@ -39,12 +40,14 @@ export default function BoardDetail({ board, name }) {
     <>
     {board['fileAttached'] === 1 &&(
       <div>
+        <div role="list" className="ui bulleted horizontal link list">
       {fileList.map((files) => (
-        <div role="list" class="ui bulleted horizontal link list">
-          <a role="listitem" class="item">{files.originalFileName}</a>
-        </div>
+        
+          <a role="listitem" className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}</a>
+        
         ))}
         </div>
+      </div>
     )}
       {board && (
         <>

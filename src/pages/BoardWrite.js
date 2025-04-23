@@ -3,13 +3,7 @@ import Axios from "axios";
 import { useRouter } from "next/navigation";
 import { FormGroup, FormField, Form } from 'semantic-ui-react'
 import { useEffect, useState, useRef } from "react";
-const options = [
-  { key: 'm', text: 'Male', value: 'male' },
-  { key: 'f', text: 'Female', value: 'female' },
-  { key: 'o', text: 'Other', value: 'other' },
-]
 
-const fileArray =[];
 export default function BoardWrite({ changeGoUrl }) {
   const router = useRouter();
   let fileFormData = new FormData();
@@ -89,13 +83,8 @@ useEffect(() => {
           //router.refresh();
     
       };
-const i = 1;
-const fileInputRef1 = useRef();
-const fileInputRef2 = useRef();
-const fileInputRef3 = useRef();
 
-const [refNm, setRefNm] = useState("fileInputRef1");
-
+  const fileInputRef1 = useRef();
   const fileFormRef1 = React.createRef();
     return (
       <div>
