@@ -18,8 +18,8 @@ export default function BoardUpdate({ board }) {
   }
   const [fileList, setFileList] = useState([]);
   const [fileUpdateList, setFileUpdateList] = useState([]);
-  const [boardDetail, setBoardDetail] = useState([]);
-  console.log("board : " + JSON.stringify(board));
+  const [boardDetail, setBoardDetail] = useState(board);
+
   const fileChange = e => {
     console.log("e.target.value : " +  e.target.value)
     console.log("e.target.name : " +  e.target.name)
@@ -45,16 +45,61 @@ export default function BoardUpdate({ board }) {
     </div>
   )
 
-useEffect(() => {
-  board && setBoardDetail(board); setFileList(board["boardFileDTO"]);
-  console.log("useEffect fileList : " + JSON.stringify(fileList));
+  const fileDelete = async function (fileId, boardId) {
+    if(window.confirm('Delete the item?')){
+      await Axios.get(`http://localhost:8090/api/v1/board/fileDelete/${fileId}&${boardId}`, {
+        headers: {
+          "Content-Type": "application/json", 
+          access: localStorage.getItem("access") 
+        },
+        params: {
+          fileId: fileId,
+          boardId: boardId
+        },
+      }
+    ).then((response, error) => {
+      console.log("response : " + JSON.stringify(response.data));
+      setFileList(response.data);
+      console.log("fileDelete fileList : " + JSON.stringify(fileList));
+    }).catch(function (error) {
+      console.log("error cause : " + JSON.stringify(error));
+    });
+    };
+    console.log("fileId : " +  fileId);
+    console.log("boardId : " +  boardId)
+  };
   
+  const getFileList = async function (boardId) {
+
+      await Axios.get(`http://localhost:8090/api/v1/board/fileList/${fileId}`, {
+        headers: {
+          "Content-Type": "application/json", 
+          access: localStorage.getItem("access") 
+        },
+        params: {
+        },
+      }
+    ).then((response, error) => {
+      console.log("response : " + JSON.stringify(response.data));
+      setFileList(response.data);
+      console.log("fileDelete fileList : " + JSON.stringify(fileList));
+    }).catch(function (error) {
+      console.log("error cause : " + JSON.stringify(error));
+    });
+
+  };
+  
+  
+useEffect(() => {
+  console.log("boardDetail : " +  JSON.stringify(boardDetail))
+  board && setBoardDetail(boardDetail); setFileList(boardDetail["boardFileDTO"]);
+  console.log("useEffect fileList : " + JSON.stringify(fileList));
 }, [fileList]);
-console.log("boardDetail : " +  JSON.stringify(boardDetail))
+//console.log("boardDetail : " +  JSON.stringify(boardDetail))
       const onFormSubmit = async evt => {
         evt.preventDefault(); 
         console.log("prevent test");
-        console.log("onFormSubmit boardDetail : " +  JSON.stringify(boardDetail))
+        //console.log("onFormSubmit boardDetail : " +  JSON.stringify(boardDetail))
           const boardId = boardDetail.id;
           const boardWriter = boardDetail.boardWriter;
           const boardPass = boardDetail.boardPass;
@@ -104,6 +149,8 @@ console.log("boardDetail : " +  JSON.stringify(boardDetail))
 
     const fileInputRef1 = useRef();
     const fileFormRef1 = React.createRef();
+    
+    
   return (
     <>
     {board['fileAttached'] === 1 &&(
@@ -111,9 +158,9 @@ console.log("boardDetail : " +  JSON.stringify(boardDetail))
         <div role="list" className="ui bulleted horizontal link list">
       {fileList.map((files) => (
         
-          <div role="listitem" className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}
+          <div id={files.id} role="listitem" className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}
 
-            <i aria-hidden="true" class="delete icon" style={{hover: "background-color: #ff0000"}} onClick={() => alert(1)}></i>
+            <i id={files.id} aria-hidden="true" className="delete icon" style={{hover: "background-color: #ff0000"}} onClick={() => fileDelete(files.id, files.boardId)}></i>
           
           </div>
         ))}
