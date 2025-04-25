@@ -8,6 +8,7 @@ import { FileService } from '../../FileService';
 import { use } from 'react';
 
 import Board from "../../../component/Board.js";
+import CommentList from "../../CommentList.js";
 
 
 export default function BoardDetail({ board, name }) {
@@ -57,6 +58,7 @@ export default function BoardDetail({ board, name }) {
           </Head>
           {name} 환경 입니다.
           <Board board={board} />
+          {/* <CommentList /> */}
         </>
       )}
     </>
