@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps }) {
   
   
   const username = useContext(UserContext);
-  console.log("MyApp sessusername : " + loginUserId);
+  //console.log("MyApp sessusername : " + loginUserId);
   return (
     <div style={{ width: 1000, margin: "0 auto" }}>
       <UserContext value={loginUserId}>
