@@ -20,10 +20,11 @@ import {
 export default function CommentList() {
   
   var depth = 0;
+  var renderVal = [];
   const [commentListRender, setCommentListRender] = useState([]);
   const [commentListReturn, setCommentListReturn] = useState([]);
   function recursiveMap(commentLists, level, depthVal) {
-    console.log("recursiveMap commentLists : " + JSON.stringify(commentLists));
+    //console.log("recursiveMap commentLists : " + JSON.stringify(commentLists));
     commentLists.map((commentList) => {
       console.log("recursiveMap level : " + level);
       console.log("depthVal : " + depthVal)
@@ -32,23 +33,50 @@ export default function CommentList() {
          + " | commentWriter : " + commentList["commentWriter"]
          + " | commentContents : " + commentList["commentContents"]);
          
+
+      var depthStyle = depthVal * 20;
+      var testVal = 1;
+      console.log("depthStyle : " + depthStyle)
       if(commentList["childrencomments"] !== "" && commentList["childrencomments"] !== null 
         && commentList["childrencomments"].length > 0
       ){
         console.log("childrencomments exists!!!!!!!!!!");
-        setCommentListRender([...commentListRender, <CommentGroup>])
+        //renderVal.push(<CommentGroup><Comment key={commentList["id"]}>);
+        /* for(i=0;i<depth;i++){
+          renderVal.push();
+        } */
+       
+        renderVal.push(<Comment key={commentList["id"]} style={{ paddingLeft: depthStyle }}>
+          <CommentContent>
+            <CommentAuthor as='a'>{commentList["commentWriter"]}</CommentAuthor>
+        <CommentText>{commentList["commentContents"]}</CommentText>
+        <CommentActions>
+          <CommentAction>Reply</CommentAction>
+          {testVal && <CommentAction>Edit</CommentAction>}
+        </CommentActions>
+        <div>
+        <FormField as="" control='textarea' rows='3' value={commentList["commentContents"]} />
+        </div>
+         </CommentContent>
+         </Comment>
+         );
+          setCommentListRender([...commentListRender, 
+           renderVal]);
         recursiveMap(commentList["childrencomments"], "child", depthVal+1)
-        setCommentListRender([...commentListRender, </CommentGroup>])
+        //renderVal.push(</Comment></CommentGroup>)
       }else{
         console.log("childrencomments nullxxxxxxxxxxxx");
-        setCommentListRender([...commentListRender, <Comment key={commentList["id"]}>
+        renderVal.push(<Comment key={commentList["id"]} style={{ paddingLeft: depthStyle }}>
           <CommentContent>
             <CommentAuthor as='a'>{commentList["commentWriter"]}</CommentAuthor>
         <CommentText>{commentList["commentContents"]}</CommentText>
         <CommentActions>
           <CommentAction>Reply</CommentAction>
         </CommentActions>
-         </CommentContent></Comment>]);
+         </CommentContent>
+         </Comment>);
+          setCommentListRender([...commentListRender, 
+           renderVal]);
       }
       
     });
@@ -70,7 +98,7 @@ export default function CommentList() {
         
         //console.log("response : " + JSON.stringify(response.data.content));
         setCommentListReturn(response.data.content);
-        console.log("commentListReturn : " + JSON.stringify(commentListReturn));
+        //console.log("commentListReturn : " + JSON.stringify(commentListReturn));
         recursiveMap(response.data.content, "root", 0);
        
         
@@ -95,10 +123,11 @@ export default function CommentList() {
     </Comment>
     </CommentGroup>
       ); */
-      console.log("commentListReturn : " + JSON.stringify(commentListReturn))
+      //console.log("commentListReturn : " + JSON.stringify(commentListReturn))
+     // console.log("commentListRender : " + JSON.stringify(commentListRender))
       return (
-<CommentGroup>
-        {commentListRender}
+        <CommentGroup>
+          {commentListRender}
         </CommentGroup>
      );
      
