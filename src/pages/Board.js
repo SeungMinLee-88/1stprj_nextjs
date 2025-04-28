@@ -145,7 +145,7 @@ export default function Board() {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [currentPage]);
   
 /*   useEffect(() => {
     setCurrentPage(1);
