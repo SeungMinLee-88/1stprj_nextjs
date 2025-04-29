@@ -33,8 +33,9 @@ export default function CommentList() {
     element.getAttribute("hidden") === null ? element.hidden = true : element.hidden = false;
   }
   const addEdit = e => {
-    var replyId = "reply_div"+e.target.getAttribute('parentid');
-    const element = document.getElementById(replyId);
+    var editId = "edit_div"+e.target.getAttribute('commentId');
+    console.log("editId : " + editId)
+    const element = document.getElementById(editId);
     element.getAttribute("hidden") === null ? element.hidden = true : element.hidden = false;
   }
 
@@ -67,19 +68,19 @@ export default function CommentList() {
 });
 //testVal="222222222";
 console.log("commentGetRoot rootId : " + retRootId);
-console.log("onFormSubmit rootIdSt : " + rootIdSt);
+console.log("saveFormSubmit rootIdSt : " + rootIdSt);
 console.log("commentGetRoot rootIdSt : " + rootIdSt);
 return retRootId;
 }
   
-  const onFormSubmit = async evt => {
+  const saveFormSubmit = async evt => {
     evt.preventDefault(); 
     console.log("prevent test");
     console.log("e.target.value : " + evt.target.parentId.getAttribute('parentid'));
     const parentCommentId = evt.target.parentId.getAttribute('parentid');
     const rootId = await commentGetRoot(parentCommentId);
-    console.log("onFormSubmit retRootId : " + retRootId);
-    console.log("onFormSubmit rootIdSt : " + rootIdSt);
+    console.log("saveFormSubmit retRootId : " + retRootId);
+    console.log("saveFormSubmit rootIdSt : " + rootIdSt);
     const formId = "form" + parentCommentId;
     console.log("formId : " + formId);
     const formData = new FormData();
@@ -109,10 +110,29 @@ return retRootId;
     .catch(function (error) {
       console.log(error);
     });
-    //formData.append("boardId", boardId);
-    //var formId = "reply_div"+e.target.getAttribute('rootid');
-    
-    //const boardWriter = evt.target.boardWriter.value;
+  }
+    const updateFormSubmit = async evt => {
+      evt.preventDefault(); 
+      const commentId = evt.target.commentId.getAttribute('commentId'); 
+      const editFormId = "edit" + commentId;
+      //const commentId = editFormId.getAttribute('commentId');
+      console.log("commentId : " + commentId);
+      console.log("document.getElementById(editFormId).val : " + document.getElementById(editFormId).value);
+
+      
+      const resp = await Axios.post("http://localhost:8090/comment/commentUpdate",
+        {
+          id: commentId,
+          commentContents: document.getElementById(editFormId).value,
+        }
+      )
+      .then(function (response) {
+        console.log("response.data : " + JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
   }
   var renderVal = [];
   function recursiveMap(commentLists, level, depthVal) {
@@ -140,20 +160,23 @@ return retRootId;
           <CommentAction parentid={commentList["id"]} onClick={addReply}>Reply</CommentAction>
           
           <div id={"reply_div"+commentList["id"]} hidden>
-          <Form onSubmit={onFormSubmit}>
+          <Form onSubmit={saveFormSubmit}>
+          <input type="text" id="parentId" name="parentId" parentid={commentList["id"]} />
           <FormField id={"form"+commentList["id"]} as="" control='textarea' rows='2' />
           <button type="submit" className="ui primary button" color="blue">Write</button>
           </Form>
           </div>
 
-          {testVal && <CommentAction>Edit</CommentAction>}
-        </CommentActions>
-        <div id={"edit_div"+commentList["id"]} hidden>
-          <Form onSubmit={onFormSubmit}>
-          <FormField id={"form"+commentList["id"]} as="" control='textarea' rows='2' />
-          <button type="submit" className="ui primary button" color="blue">Write</button>
+          {testVal && <CommentAction commentid={commentList["id"]} onClick={addEdit}>Edit</CommentAction>}
+
+          <div id={"edit_div"+commentList["id"]} hidden>
+          <Form onSubmit={updateFormSubmit}>
+          <input type="text" id="commentId" name="commentId" commentid={commentList["id"]} />
+          <FormField id={"edit"+commentList["id"]} as="" control='textarea' rows='2' defaultValue={commentList["commentContents"]} />
+          <button type="submit" className="ui primary button" color="blue">Edit</button>
           </Form>
           </div>
+          </CommentActions>
          </CommentContent>
          </Comment>
          );
@@ -170,7 +193,7 @@ return retRootId;
         <CommentActions>
         <CommentAction parentid={commentList["id"]} onClick={addReply}>Reply</CommentAction>
           <div id={"reply_div"+commentList["id"]} hidden>
-          <Form onSubmit={onFormSubmit}>
+          <Form onSubmit={saveFormSubmit}>
           <input type="text" id="parentId" name="parentId" parentid={commentList["id"]} />
           <FormField id={"form"+commentList["id"]} as="" control='textarea' rows='2' />
           <button type="submit" className="ui primary button" color="blue">Write</button>
