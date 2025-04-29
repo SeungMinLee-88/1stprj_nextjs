@@ -52,13 +52,13 @@ export default function Gnb() {
         }}
       />
       
-      <Menu.Item
+{/*       <Menu.Item
         name="login"
         active={activeItem === "login"}
         onClick={() => {
           router.push("/login");
         }}
-      />
+      /> */}
     </Menu>
   );
 }

@@ -2,25 +2,34 @@ import React, { findDOMNode, Component, PropTypes } from 'react';
 import Axios from "axios";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
-import { Button, Form } from "semantic-ui-react";
+import {
+  ModalContent,
+  ModalActions,
+  Button,
+  Header,
+  Icon,
+  Modal,
+  Form
+} from 'semantic-ui-react'
 import { UserContext } from './UserContext.js';
 
 
 export default function Login({setLoginUserId}) {
   /* const [loginUserId, setLoginUserId] = useState(""); */
+
   const router = useRouter();
 /*   console.log("Login loginUserId : " + loginUserId); */
   function login() {
     console.log("call login");
 
   }
-    
+  const [open, setOpen] = useState(true)
   return (
     <div style={{ padding: "100px 0", textAlign: "center" }}>
       <Form onSubmit={async evt=>{
           evt.preventDefault();
-          const username = evt.target.username.value;
-          const password = evt.target.password.value;
+          const loginId = evt.target.loginId.value;
+          const userPassword = evt.target.userPassword.value;
           //Axios.defaults.withCredentials = true;
           await Axios.post(`http://localhost:8090/login`, 
             /* {
@@ -37,8 +46,8 @@ export default function Login({setLoginUserId}) {
             }
           } */
           {
-            username: username,
-            password: password
+            loginId: loginId,
+            userPassword: userPassword
           },
           {withCredentials: true}
           )
@@ -50,10 +59,10 @@ export default function Login({setLoginUserId}) {
             if (response.headers.access) {
               localStorage.setItem("access", response.headers.access);
             }
-            setLoginUserId(username);
+            setLoginUserId(loginId);
            
             //localStorage.setItem("username", username); 
-            window.sessionStorage.setItem("username", username); 
+            window.sessionStorage.setItem("loginId", loginId); 
           /* const board = await resp.json(); */
           //router.push(`/`);
           //router.refresh();
@@ -63,15 +72,19 @@ export default function Login({setLoginUserId}) {
           });
           }}>
         <Form.Field inline>
-          <input name="username" placeholder="ID" />
+          <input name="loginId" placeholder="ID" />
         </Form.Field>
         <Form.Field inline>
-          <input name="password" type="password" placeholder="Password" />
+          <input name="userPassword" type="password" placeholder="Password" />
         </Form.Field>
         <button className="ui primary button" color="blue" onClick={() => login}>
           Login
         </button>
       </Form>
+
+    <button class="ui button" onClick={() => setOpen(!open)}>Show Modal</button>
+
+
     </div>
   );
 }

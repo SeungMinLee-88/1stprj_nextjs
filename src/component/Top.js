@@ -43,6 +43,11 @@ export default function Top({setLoginUserId}) {
         <Header as="h1">Spring</Header>
       </div>
       <div style={{display: 'flex',  justifyContent:'right'}}>
+        <button className="ui primary button" color="blue" onClick={() => {
+          router.push("/login");
+        }}>
+          LogIn
+        </button>
        
         <button className="ui primary button" color="blue" onClick={() => logout()}>
           LogOut
