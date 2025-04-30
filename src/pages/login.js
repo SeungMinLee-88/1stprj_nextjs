@@ -14,7 +14,7 @@ import {
 import { UserContext } from './UserContext.js';
 
 
-export default function Login({setLoginUserId}) {
+export default function Login({setAccessToken, setLoginUserId}) {
   /* const [loginUserId, setLoginUserId] = useState(""); */
 
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function Login({setLoginUserId}) {
 
   }
   const [open, setOpen] = useState(true)
+  //console.log("access : " + localStorage.getItem("access"))
   return (
     <div style={{ padding: "100px 0", textAlign: "center" }}>
       <Form onSubmit={async evt=>{
@@ -32,33 +33,37 @@ export default function Login({setLoginUserId}) {
           const userPassword = evt.target.userPassword.value;
           //Axios.defaults.withCredentials = true;
           await Axios.post(`http://localhost:8090/login`, 
-            /* {
+            {
+              loginId: loginId,
+              userPassword: userPassword
+            },
+            {
+              headers :{
+                'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header',
+                'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Expose-Headers':'userName'
+              }
+            },
+/*             {
               headers :{
                 'Access-Control-Allow-Headers':'x-requested-with, Request-Header, Response-Header',
                 'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
                 'Access-Control-Allow-Origin':'*',
-                'Access-Control-Expose-Headers':'Response-Header'
+                'Access-Control-Expose-Headers':'userName'
               }
-              ,
-              data: {
-              username: username,
-              password: password
-            }
-          } */
-          {
-            loginId: loginId,
-            userPassword: userPassword
-          },
+            }, */
+         
           {withCredentials: true}
           )
           .then(function (response) {
             console.log("response : " + JSON.stringify(response));
-            console.log("response username : " + JSON.stringify(response.config.data[0]));
             console.log("response.data : " + JSON.stringify(response.headers.access));
             console.log("set-cookie : " + response.headers['set-cookie']);
             if (response.headers.access) {
               localStorage.setItem("access", response.headers.access);
             }
+            setAccessToken(localStorage.getItem("access"));
             setLoginUserId(loginId);
            
             //localStorage.setItem("username", username); 
@@ -66,6 +71,8 @@ export default function Login({setLoginUserId}) {
           /* const board = await resp.json(); */
           //router.push(`/`);
           //router.refresh();
+          //alert("Login Success");
+          //router.push(`/`);
           })
           .catch(function (error) {
             console.log(error);
@@ -81,8 +88,6 @@ export default function Login({setLoginUserId}) {
           Login
         </button>
       </Form>
-
-    <button class="ui button" onClick={() => setOpen(!open)}>Show Modal</button>
 
 
     </div>

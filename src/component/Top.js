@@ -4,9 +4,11 @@ import { Header } from "semantic-ui-react";
 import { Button, Form } from "semantic-ui-react";
 import Gnb from "./Gnb";
 
-export default function Top({setLoginUserId}) {
+export default function Top({setAccessToken, setLoginUserId, accessToken}) {
   const router = useRouter();
-  
+    //console.log("accessToken : " + localStorage.getItem("access"))
+  //const accessToken = useContext(AccessTokenContext);
+    console.log("Top accessToken : " + accessToken);
   async function logout(){
     console.log("call logout");
     await Axios.post(`http://localhost:8090/logout` ,
@@ -18,9 +20,14 @@ export default function Top({setLoginUserId}) {
       if(response.status === 200){
         console.log("response.status200");
         localStorage.removeItem("access");
-        window.sessionStorage.removeItem("username");
+        window.sessionStorage.removeItem("loginId"); 
       }
-    //router.push(`/`);
+      setAccessToken();
+      setLoginUserId();
+      alert("Logout Success");
+      router.push(`/`);
+      //router.refresh();
+      //router.push(`/`);
     })
     .catch(function (error) {
       console.log(error);
@@ -43,15 +50,12 @@ export default function Top({setLoginUserId}) {
         <Header as="h1">Spring</Header>
       </div>
       <div style={{display: 'flex',  justifyContent:'right'}}>
-        <button className="ui primary button" color="blue" onClick={() => {
-          router.push("/login");
-        }}>
-          LogIn
-        </button>
-       
-        <button className="ui primary button" color="blue" onClick={() => logout()}>
-          LogOut
-        </button>
+        {!accessToken ? "false" : "true"}
+        {!accessToken ? 
+        <button className="ui primary button" color="blue" onClick={() => {router.push("/login");}}>LogIn</button> 
+        : <button className="ui primary button" color="blue" onClick={() => logout()}>LogOut</button>}
+{/*         <button className="ui primary button" color="blue" onClick={() => {router.push("/login");}}>LogIn</button>
+        <button className="ui primary button" color="blue" onClick={() => logout()}>LogOut</button> */}
       </div>
       <Gnb />
     </div>

@@ -8,6 +8,7 @@ import { UserContext } from './UserContext.js';
 
 
 export default function MyApp({ Component, pageProps }) {
+  const [accessToken, setAccessToken] = useState();
   const [loginUserId, setLoginUserId] = useState();
   const [localusername, setlocalusername] = useState("");
   console.log("loginUserId : " + loginUserId);
@@ -21,20 +22,22 @@ export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
     //localStorage.setItem("username", loginUserId); 
-    //setLoginUserId(localStorage.getItem("username"));
+    setAccessToken(localStorage.getItem("access"));
     setLoginUserId(window.sessionStorage.getItem("username"));
-  }, [loginUserId]);
+  }, [accessToken, loginUserId]);
   
   
   const username = useContext(UserContext);
   //console.log("MyApp sessusername : " + loginUserId);
   return (
-    <div style={{ width: 1000, margin: "0 auto" }}>
+    <div style={{ width: 800, margin: "0 auto" }}>
+{/*       <AccessTokenContext value={accessToken}> */}
       <UserContext value={loginUserId}>
-      <Top setLoginUserId={setLoginUserId} />
-      <Component {...pageProps} setLoginUserId={setLoginUserId} />
+      <Top setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} accessToken={accessToken}/>
+      <Component {...pageProps} setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} />
       <Footer />
       </UserContext>
+      {/* </AccessTokenContext> */}
     </div>
   );
 }
