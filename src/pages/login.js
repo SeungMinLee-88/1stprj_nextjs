@@ -14,7 +14,7 @@ import {
 import { UserContext } from './UserContext.js';
 
 
-export default function Login({setAccessToken, setLoginUserId}) {
+export default function Login({setAccessToken, setLoginUserId, setLoginUserName}) {
   /* const [loginUserId, setLoginUserId] = useState(""); */
 
   const router = useRouter();
@@ -38,13 +38,16 @@ export default function Login({setAccessToken, setLoginUserId}) {
               userPassword: userPassword
             },
             {
+              withCredentials: true
+            },
+            {
               headers :{
-                'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header',
+                'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header, access',
                 'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
                 'Access-Control-Allow-Origin':'*',
-                'Access-Control-Expose-Headers':'userName'
+                'Access-Control-Expose-Headers':'userName, access'
               }
-            },
+            }
 /*             {
               headers :{
                 'Access-Control-Allow-Headers':'x-requested-with, Request-Header, Response-Header',
@@ -54,28 +57,31 @@ export default function Login({setAccessToken, setLoginUserId}) {
               }
             }, */
          
-          {withCredentials: true}
+          
           )
           .then(function (response) {
             console.log("response : " + JSON.stringify(response));
-            console.log("response.data : " + JSON.stringify(response.headers.access));
+            console.log("response.headers.access : " + JSON.stringify(response.headers.access));
+            console.log("response.data userName : " + JSON.stringify(response.headers["username"]));
             console.log("set-cookie : " + response.headers['set-cookie']);
             if (response.headers.access) {
               localStorage.setItem("access", response.headers.access);
             }
             setAccessToken(localStorage.getItem("access"));
             setLoginUserId(loginId);
+            setLoginUserName(response.headers["username"]);
            
             //localStorage.setItem("username", username); 
-            window.sessionStorage.setItem("loginId", loginId); 
+            window.sessionStorage.setItem("loginId", loginId);
+            window.sessionStorage.setItem("userName", response.headers["username"]); 
           /* const board = await resp.json(); */
           //router.push(`/`);
           //router.refresh();
-          //alert("Login Success");
-          //router.push(`/`);
+          /* alert("Login Success");
+          router.push(`/`); */
           })
           .catch(function (error) {
-            console.log(error);
+            console.log("error : " + error);
           });
           }}>
         <Form.Field inline>

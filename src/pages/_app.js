@@ -10,7 +10,7 @@ import { UserContext } from './UserContext.js';
 export default function MyApp({ Component, pageProps }) {
   const [accessToken, setAccessToken] = useState();
   const [loginUserId, setLoginUserId] = useState();
-  const [localusername, setlocalusername] = useState("");
+  const [loginUserName, setLoginUserName] = useState("");
   console.log("loginUserId : " + loginUserId);
   
   //console.log("localStorage username : " + localStorage.getItem("username"));
@@ -24,7 +24,8 @@ export default function MyApp({ Component, pageProps }) {
     //localStorage.setItem("username", loginUserId); 
     setAccessToken(localStorage.getItem("access"));
     setLoginUserId(window.sessionStorage.getItem("username"));
-  }, [accessToken, loginUserId]);
+    setLoginUserName(window.sessionStorage.getItem("userId"));
+  }, [accessToken, loginUserId, loginUserName]);
   
   
   const username = useContext(UserContext);
@@ -33,8 +34,8 @@ export default function MyApp({ Component, pageProps }) {
     <div style={{ width: 800, margin: "0 auto" }}>
 {/*       <AccessTokenContext value={accessToken}> */}
       <UserContext value={loginUserId}>
-      <Top setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} accessToken={accessToken}/>
-      <Component {...pageProps} setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} />
+      <Top setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} setLoginUserName={setLoginUserName} accessToken={accessToken}/>
+      <Component {...pageProps} setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} setLoginUserName={setLoginUserName} />
       <Footer />
       </UserContext>
       {/* </AccessTokenContext> */}

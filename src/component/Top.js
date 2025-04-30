@@ -4,7 +4,7 @@ import { Header } from "semantic-ui-react";
 import { Button, Form } from "semantic-ui-react";
 import Gnb from "./Gnb";
 
-export default function Top({setAccessToken, setLoginUserId, accessToken}) {
+export default function Top({setAccessToken, setLoginUserId, setLoginUserName, accessToken}) {
   const router = useRouter();
     //console.log("accessToken : " + localStorage.getItem("access"))
   //const accessToken = useContext(AccessTokenContext);
@@ -21,9 +21,11 @@ export default function Top({setAccessToken, setLoginUserId, accessToken}) {
         console.log("response.status200");
         localStorage.removeItem("access");
         window.sessionStorage.removeItem("loginId"); 
+        window.sessionStorage.removeItem("userName"); 
       }
       setAccessToken();
       setLoginUserId();
+      setLoginUserName();
       alert("Logout Success");
       router.push(`/`);
       //router.refresh();
