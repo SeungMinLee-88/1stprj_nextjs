@@ -2,7 +2,9 @@
 import Axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
-import { Dimmer, Loader } from "semantic-ui-react";
+import { Loader, Container, Header, Divider,
+  ListItem, List
+ } from "semantic-ui-react";
 import { useEffect, useState } from "react";
 import { FileService } from '../../FileService';
 import { use } from 'react';
@@ -39,25 +41,39 @@ export default function BoardDetail({ board, name }) {
   }, []);
   return (
     <>
-    {board['fileAttached'] === 1 &&(
-      <div>
-        <div role="list" className="ui bulleted horizontal link list">
-      {fileList.map((files) => (
-        
-          <a role="listitem" className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}</a>
-        
-        ))}
-        </div>
-      </div>
-    )}
+
       {board && (
         <>
-          <Head>
-            <title>{board.boardTitle}</title>
-            <meta name="description" content={board.boardContents}></meta>
-          </Head>
-          {name} 환경 입니다.
-          <Board board={board} />
+            <div>
+            <Container textAlign='left' style={{"font-size": "50px"}}>{board.boardTitle}</Container>
+            <Container textAlign='right'>Writer : {board.boardWriter}</Container>
+            <Container textAlign='justified'>
+            <Divider />
+              <p>
+              {board.boardContents}
+              </p>
+            </Container>
+            </div>
+            <div>
+            <Divider />
+            {/* <div role="list" className="ui bulleted horizontal link list"></div> */}
+            {board['fileAttached'] === 1 &&(
+
+                  <List link>
+                  
+                  <ListItem active>Attached : me</ListItem>
+                {fileList.map((files) => (
+                   <div>
+                    File name : 
+                   
+                    <a role="listitem" id={files.id} className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}{files.type}</a>
+                    </div>
+                  
+                  ))}
+
+                  </List>
+              )}
+            </div>
           {/* <CommentList /> */}
         </>
       )}

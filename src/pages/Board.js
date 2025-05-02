@@ -4,24 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Divider, Header } from "semantic-ui-react";
 import BoardList from "../component/BoardList";
-import BoardWrite from "../component/BoardWrite";
+import BoardWrite from "./BoardWrite";
 import Reacttest from "./Reacttest";
 import Error403 from "./403";
 import { useContext } from 'react';
-import { UserContext } from './UserContext.js';
-
-
-
-/* console.log("response.data.pageable.pageNumber : " + response.data.pageable.pageNumber);
-console.log("response.data.totalPages : " + response.data.totalPages);
-console.log("response.data.pageable.pageSize : " + response.data.pageable.pageSize);
-console.log("va11 : " + (Math.ceil(Number(currentPage) / response.data.totalPages)));
-console.log("va 22: " + (Math.ceil(Number(response.data.pageable.pageNumber) / response.data.pageable.pageSize)));
-console.log("response.data.pageable.pageSize + 1 : " + Number(response.data.pageable.pageSize) + 1);
-console.log("type response.data.pageable.pageSize : " + typeof response.data.pageable.pageSize);
-console.log("startPage : " + startPage);
-console.log("response.data.pageable.totalPages : " + response.data.totalPages);
- */
+import { UserIdContext } from './UserContext.js';
+import { UserNameContext } from './UserContext.js';
 
 export default function Board() {
   const [boardList, setboardList] = useState([]);
@@ -34,8 +22,9 @@ export default function Board() {
   const [searchKey, setSearchKey] = useState("boardTitle");
   const [searchValue, setSearchValue] = useState("");
   const [goUrl, setGoUrl] = useState("/");
-  const username = useContext(UserContext);
-  console.log("Board sessusername : " + username);
+  const userId = useContext(UserIdContext);
+  const userName = useContext(UserNameContext);
+  console.log("Board userId : " + userName);
 
 
   const API_URL =
@@ -65,7 +54,7 @@ export default function Board() {
   }
     
   function getData() {
-    Axios.get(API_URL, {
+    Axios.get("http://localhost:8090/api/v1/board/pagingList", {
       headers: {
         "Content-Type": "application/json", 
         access: localStorage.getItem("access") 
@@ -179,15 +168,17 @@ export default function Board() {
       Board
       </Header>
       <Divider />
-     {/*  <BoardList boardList={boardList.slice(0, 2)} /> */}
+      {boardList.length}
+     {boardList.length !== 0 ?
      <BoardList boardList={boardList} currentPage={currentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
-     startPage={startPage} endPage={endPage} />
-           
-      {/* <ItemList list={list.slice(9)} /> */}
-      {/* <Button>Click Here</Button> */}
-      
-      <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>
+     startPage={startPage} endPage={endPage} />      
+     : 
+     <div style={{display: 'flex',  justifyContent:'center'}}>
+     <h1 class="ui header">There is no Contents</h1>
+     </div>
 
+    }
+      <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>
     </div>
   );
 }

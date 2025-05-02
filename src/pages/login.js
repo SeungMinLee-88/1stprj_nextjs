@@ -44,7 +44,7 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
               headers :{
                 'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header, access',
                 'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
-                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Allow-Origin':'http://localhost:8090/login',
                 'Access-Control-Expose-Headers':'userName, access'
               }
             }

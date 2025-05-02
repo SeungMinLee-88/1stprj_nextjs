@@ -1,6 +1,7 @@
 import React from "react";
 import Axios from "axios";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FormGroup, FormField, Form } from 'semantic-ui-react'
 
 const options = [
@@ -11,6 +12,7 @@ const options = [
 
 export default function BoardWrite({ changeGoUrl }) {
   const router = useRouter();
+  const [userName, setUserName] = useState(window.sessionStorage.getItem("userName")) 
 
     return (
       <div>
@@ -20,7 +22,7 @@ export default function BoardWrite({ changeGoUrl }) {
           const boardPass = evt.target.boardPass.value;
           const boardTitle = evt.target.boardTitle.value;
           const boardContents = evt.target.boardContents.value;
-          const resp = await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}/save`, {
+          const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/save`, {
             boardWriter: boardWriter,
             boardPass: boardPass,
             boardTitle: boardTitle,
@@ -39,33 +41,29 @@ export default function BoardWrite({ changeGoUrl }) {
         }}>
           <FormGroup widths='equal'>
           <FormField>
-          <label>First Name</label>
-          <input name='boardWriter' />
+          <label>boardWriter : {userName}</label>
+          <input name='boardWriter'/>
           </FormField>
           <FormField>
-          <label>First Name</label>
+          <label>boardPass</label>
           <input name='boardPass' />
           </FormField>
+          </FormGroup>
           <FormField>
-          <label>First Name</label>
+          <label>boardTitle</label>
           <input name='boardTitle' />
           </FormField>
-          <FormField>
-          <label>First Name</label>
-          <input name='boardContents' />
-          </FormField>
-            {/* <FormField label='An HTML <select>' control='select'>
-              <option value='male'>Male</option>
-              <option value='female'>Female</option>
-            </FormField> */}
-          </FormGroup>
-          <FormField label='boardContents' as="" control='textarea' rows='3' />
+
+          <FormField name='boardContents' label='boardContents' as="" control='textarea' rows='3' />
           {/* <FormField label='Write' control='button'>
             HTML Button
           </FormField> */}
+          <div style={{display: 'flex', justifyContent:'right'}}>
+          <button type="button"  class="ui button" onClick={() => changeGoUrl("/")}>List</button>
           <button type="submit" class="ui button">Write</button>
+          </div>
         </Form>
-      <button class="ui button" onClick={() => changeGoUrl("/")}>List</button>
+      
       </div>
     );
 }

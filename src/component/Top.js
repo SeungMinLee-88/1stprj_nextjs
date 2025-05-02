@@ -3,11 +3,15 @@ import { useRouter } from "next/router";
 import { Header } from "semantic-ui-react";
 import { Button, Form } from "semantic-ui-react";
 import Gnb from "./Gnb";
+import { useContext } from 'react';
+import { UserIdContext } from '../pages/UserContext.js';
 
 export default function Top({setAccessToken, setLoginUserId, setLoginUserName, accessToken}) {
   const router = useRouter();
     //console.log("accessToken : " + localStorage.getItem("access"))
   //const accessToken = useContext(AccessTokenContext);
+    const userId = useContext(UserIdContext);
+    console.log("Top userId : " + userId);
     console.log("Top accessToken : " + accessToken);
   async function logout(){
     console.log("call logout");

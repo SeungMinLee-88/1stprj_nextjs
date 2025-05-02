@@ -33,6 +33,13 @@ export default function Gnb() {
         }}
       />
       <Menu.Item
+        name="BoardWrite"
+        active={activeItem === "admin"}
+        onClick={() => {
+          router.push("/BoardWrite");
+        }}
+      />
+      <Menu.Item
         name="Reaserve"
         active={activeItem === "reserve"}
         onClick={() => {
