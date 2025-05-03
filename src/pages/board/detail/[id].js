@@ -16,6 +16,7 @@ import CommentList from "../../CommentList.js";
 export default function BoardDetail({ board, name }) {
   const router = useRouter();
   const [fileList, setFileList] = useState([]);
+  const [imageFileList, setImageFileList] = useState([]);
   if (router.isFallback) {
     return (
       <div style={{ padding: "100px 0" }}>
@@ -36,9 +37,14 @@ export default function BoardDetail({ board, name }) {
     if(board["fileAttached"] === 1){
       console.log("BoardDetail boardFileDTO : " + JSON.stringify(board["boardFileDTO"]));
       setFileList(board["boardFileDTO"]);
+      setImageFileList(fileList.filter(a => a.mimeType === "image"));
       console.log("useEffect fileList : " + JSON.stringify(fileList));
       }
-  }, []);
+  }, [fileList]);
+
+console.log("fileList  : " + JSON.stringify(fileList));
+  console.log("fileList filter : " + JSON.stringify(fileList.filter(a => a.mimeType === "image")));
+  console.log("imageFileList : " + JSON.stringify(imageFileList));
   return (
     <>
 
@@ -52,6 +58,12 @@ export default function BoardDetail({ board, name }) {
               <p>
               {board.boardContents}
               </p>
+              {imageFileList.map((imageFiles) => (
+                    <div>
+                     <img src={"http://localhost:8090/api/v1/board/download/"+imageFiles.storedFileName} class="ui medium bordered image"/>                     
+                     </div>
+                   
+                   ))}
             </Container>
             </div>
             <div>
@@ -67,11 +79,13 @@ export default function BoardDetail({ board, name }) {
                     File name : 
                    
                     <a role="listitem" id={files.id} className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}{files.type}</a>
+                    
                     </div>
                   
                   ))}
 
                   </List>
+
               )}
             </div>
           {/* <CommentList /> */}

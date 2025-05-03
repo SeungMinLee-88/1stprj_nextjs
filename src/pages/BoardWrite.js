@@ -1,7 +1,7 @@
 import React from "react";
 import Axios from "axios";
 import { useRouter } from "next/navigation";
-import { FormGroup, FormField, Form } from 'semantic-ui-react'
+import { FormGroup, FormField, Form, SegmentGroup, Segment } from 'semantic-ui-react'
 import { useEffect, useState, useRef } from "react";
 import { useContext } from 'react';
 import { UserIdContext } from './UserContext.js';
@@ -47,16 +47,16 @@ useEffect(() => {
       const onFormSubmit = async evt => {
         evt.preventDefault(); 
         console.log("prevent test");
-          const boardWriter = evt.target.boardWriter.value;
-          const boardPass = evt.target.boardPass.value;
+        console.log("evt.target.boardTitle.value : " + evt.target.boardTitle.value);
+          const boardWriter = userName;
           const boardTitle = evt.target.boardTitle.value;
           const boardContents = evt.target.boardContents.value;
           const formData = new FormData();
           /* formData.append("boardFile", fileList); */
           formData.append("boardTitle", boardTitle);
-          formData.append("boardPass", "boardPass");
-          formData.append("boardWriter", "boardWriter");
-          formData.append("boardContents", "boardContents");
+          /* formData.append("boardPass", "boardPass"); */
+          formData.append("boardWriter", boardWriter);
+          formData.append("boardContents", boardContents);
           console.log("fileList.len : " + fileList.length);
           if(fileList.length === 0) {
             console.log("fileList.length === 0");
@@ -100,21 +100,23 @@ useEffect(() => {
           evt.preventDefault();}}> */}
         <Form onSubmit={onFormSubmit}>
             <FormGroup widths='equal'>
-            <FormField>
-            <label>boardWriter : {userName}</label>
-            <input name='boardWriter'/>
+            <FormField style={{width: "100px", "text-align":"left", "font-size":"20px"}}>
+            Writer : 
+            {/* <label>Writer : {userName}</label>
+            <input name='boardWriter'/> */}
             </FormField>
-            <FormField>
-            <label>boardPass</label>
-            <input name='boardPass' />
+            <FormField style={{"text-align":"left", "font-size":"20px"}}>
+            {userName}
+{/*             <label>boardPass</label>
+            <input name='boardPass' /> */}
             </FormField>
             </FormGroup>
             <FormField>
-            <label>boardTitle</label>
+            <label>Title</label>
             <input name='boardTitle' />
             </FormField>
 
-            <FormField name='boardContents' label='boardContents' as="" control='textarea' rows='3' />
+            <FormField name='boardContents' label='Contents' as="" control='textarea' rows='3' />
 
             <Form.Field>
               <div ref={fileFormRef1}>

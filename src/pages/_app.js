@@ -24,9 +24,10 @@ export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
     //localStorage.setItem("username", loginUserId); 
-    /* setAccessToken(localStorage.getItem("access"));
+    console.log("call rerender");
+    setAccessToken(localStorage.getItem("access"));
     setLoginUserId(window.sessionStorage.getItem("userName"));
-    setLoginUserName(window.sessionStorage.getItem("loginId")); */
+    setLoginUserName(window.sessionStorage.getItem("loginId"));
   }, [accessToken, loginUserId, loginUserName]);
   
 
