@@ -134,7 +134,8 @@ export default function Board() {
 
   useEffect(() => {
     getData();
-  }, [currentPage]);
+    //setUserName(window.sessionStorage.getItem("loginId"))
+  }, [currentPage,searchKey, searchValue]);
   
 /*   useEffect(() => {
     setCurrentPage(1);
@@ -169,18 +170,11 @@ export default function Board() {
       </Header>
       <Divider />
       {boardList.length}
-     {boardList.length !== 0 ?
+
      <BoardList boardList={boardList} currentPage={currentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
      startPage={startPage} endPage={endPage} />      
-     : 
-     <div style={{display: 'flex',  justifyContent:'center'}}>
-     <h1 class="ui header">There is no Contents</h1>
-     </div>
 
-    }
-      <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button>
+      {userName !== null ? <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button> : ""}
     </div>
   );
 }
-
-// axios

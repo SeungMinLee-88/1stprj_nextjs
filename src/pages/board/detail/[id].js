@@ -8,15 +8,22 @@ import { Loader, Container, Header, Divider,
 import { useEffect, useState } from "react";
 import { FileService } from '../../FileService';
 import { use } from 'react';
+import { useContext } from 'react';
+import { UserIdContext } from '../../UserContext.js';
+import { UserNameContext } from '../../UserContext.js';
+
 
 import Board from "../../../component/Board.js";
 import CommentList from "../../CommentList.js";
 
 
-export default function BoardDetail({ board, name }) {
+export default function BoardDetail({ board, name, id }) {
   const router = useRouter();
   const [fileList, setFileList] = useState([]);
   const [imageFileList, setImageFileList] = useState([]);
+  const [goUrl, setGoUrl] = useState("");
+  const userId = useContext(UserIdContext);
+  console.log("detail userId : " + userId);
   if (router.isFallback) {
     return (
       <div style={{ padding: "100px 0" }}>
@@ -45,13 +52,14 @@ export default function BoardDetail({ board, name }) {
 console.log("fileList  : " + JSON.stringify(fileList));
   console.log("fileList filter : " + JSON.stringify(fileList.filter(a => a.mimeType === "image")));
   console.log("imageFileList : " + JSON.stringify(imageFileList));
+  console.log(`http://localhost:8090/board/update/${id}`)
   return (
     <>
 
       {board && (
         <>
             <div>
-            <Container textAlign='left' style={{"font-size": "50px"}}>{board.boardTitle}</Container>
+            <Container textAlign='left' style={{"font-size": "50px", "padding-top":"20px", "display" : "block"}}>{board.boardTitle}</Container>
             <Container textAlign='right'>Writer : {board.boardWriter}</Container>
             <Container textAlign='justified'>
             <Divider />
@@ -71,23 +79,20 @@ console.log("fileList  : " + JSON.stringify(fileList));
             {/* <div role="list" className="ui bulleted horizontal link list"></div> */}
             {board['fileAttached'] === 1 &&(
 
-                  <List link>
                   
-                  <ListItem active>Attached : me</ListItem>
+                  
+                  <List bulleted horizontal link>
+                    <ListItem active>Attached | </ListItem>
                 {fileList.map((files) => (
-                   <div>
-                    File name : 
                    
-                    <a role="listitem" id={files.id} className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}{files.type}</a>
-                    
-                    </div>
+                    <a role="listitem" id={files.id} className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}{files.type}</a>                   
                   
                   ))}
-
                   </List>
-
               )}
             </div>
+            <Divider />
+            {userId === board.boardWriter ? <button className="ui button"  onClick={() => location.href=`http://localhost:3000/board/update/${id}`}>Edit</button> : ""}
           {/* <CommentList /> */}
         </>
       )}
@@ -143,6 +148,7 @@ export async function getStaticProps(context) {
     props: {
       board: data,
       name: process.env.name,
+      id: id
     },
   };
 }

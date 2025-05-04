@@ -1,11 +1,16 @@
 import React from "react";
 import Axios from "axios";
 import { useRouter } from "next/navigation";
-import { FormGroup, FormField, Form } from 'semantic-ui-react'
+import { FormGroup, FormField, Form, Divider,
+  ListItem, List } from 'semantic-ui-react'
 import { useEffect, useState, useRef } from "react";
+import { useContext } from 'react';
+import { UserIdContext } from '../../UserContext.js';
+import { UserNameContext } from '../../UserContext.js';
 
 
-export default function BoardUpdate({ board }) {
+
+export default function BoardUpdate({ board, id }) {
   const router = useRouter();
   if (router.isFallback) {
     return (
@@ -19,6 +24,8 @@ export default function BoardUpdate({ board }) {
   const [fileList, setFileList] = useState([]);
   const [fileUpdateList, setFileUpdateList] = useState([]);
   const [boardDetail, setBoardDetail] = useState(board);
+  const userId = useContext(UserIdContext);
+  console.log("update userId : " + userId);
 
   const fileChange = e => {
     console.log("e.target.value : " +  e.target.value)
@@ -153,9 +160,34 @@ useEffect(() => {
     
   return (
     <>
-    {board['fileAttached'] === 1 &&(
+      {board && (
+       <div>
+       {/* <Form onSubmit={async evt=>{
+         evt.preventDefault();}}> */}
+       <Form onSubmit={onFormSubmit}>
+
+
+         <FormGroup widths='equal'>
+         <FormField>
+         <label>boardWriter</label>
+         <input name='boardWriter' value={boardDetail.boardWriter} onChange={e => setBoardDetail({...boardDetail, boardWriter: e.target.value})} />
+         </FormField>
+         <FormField>
+         <label>boardPass</label>
+         <input name='boardPass' value={boardDetail.boardPass} onChange={e => setBoardDetail({...boardDetail, boardPass: e.target.value})} />
+         </FormField>
+         <FormField>
+         <label>boardTitle</label>
+         <input name='boardTitle' value={boardDetail.boardTitle} onChange={e => setBoardDetail({...boardDetail, boardTitle: e.target.value})} />
+         </FormField>
+         </FormGroup>
+         <label>Contents</label>
+         <FormField label='boardContents' as="" control='textarea' rows='3' value={boardDetail.boardContents} 
+          onChange={e => setBoardDetail({...boardDetail, boardContents: e.target.value})} />
+         {board['fileAttached'] === 1 &&(
       <div>
         <div role="list" className="ui bulleted horizontal link list">
+        <ListItem active>Attached | </ListItem>
       {fileList.map((files) => (
         
           <div id={files.id} role="listitem" className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}
@@ -167,12 +199,7 @@ useEffect(() => {
         </div>
       </div>
     )}
-      {board && (
-       <div>
-       {/* <Form onSubmit={async evt=>{
-         evt.preventDefault();}}> */}
-       <Form onSubmit={onFormSubmit}>
-             <Form.Field>
+                 <Form.Field>
                <div ref={fileFormRef1}>
              <input type="file" name='files' multiple onChange={fileChange} ref={fileInputRef1} hidden/>
              {renderFileList()}
@@ -190,38 +217,11 @@ useEffect(() => {
          <label>boardFile</label>
 
          </FormField>
-
-         <FormGroup widths='equal'>
-         <FormField>
-         <label>boardWriter</label>
-         <input name='boardWriter' value={boardDetail.boardWriter} onChange={e => setBoardDetail({...boardDetail, boardWriter: e.target.value})} />
-         </FormField>
-         <FormField>
-         <label>boardPass</label>
-         <input name='boardPass' value={boardDetail.boardPass} onChange={e => setBoardDetail({...boardDetail, boardPass: e.target.value})} />
-         </FormField>
-         <FormField>
-         <label>boardTitle</label>
-         <input name='boardTitle' value={boardDetail.boardTitle} onChange={e => setBoardDetail({...boardDetail, boardTitle: e.target.value})} />
-         </FormField>
-         <FormField>
-         <label>boardContents</label>
-         <input name='boardContents' value={boardDetail.boardContents} onChange={e => setBoardDetail({...boardDetail, boardContents: e.target.value})} />
-         </FormField>
-
-           {/* <FormField label='An HTML <select>' control='select'>
-             <option value='male'>Male</option>
-             <option value='female'>Female</option>
-           </FormField> */}
-         </FormGroup>
-         <FormField label='boardContents' as="" control='textarea' rows='3' value={boardDetail.boardContents} />
-
-         {/* <FormField label='Write' control='button'>
-           HTML Button
-         </FormField> */}
-         <button type="submit" className="ui button">Write</button>
+         <Divider />
+         <button type="submit" className="ui button">Update</button>
        </Form>
-     <button className="ui button" onClick={() => changeGoUrl("/")}>List</button>
+       <Divider />
+       {userId === board.boardWriter ? <button className="ui button"  onClick={() => location.href=`http://localhost:3000/board/detail/${id}`}>Cancel</button> : ""}
      </div>
       )}
     </>
@@ -276,6 +276,7 @@ export async function getStaticProps(context) {
     props: {
       board: data,
       name: process.env.name,
+      id: id
     },
   };
 }

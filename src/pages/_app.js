@@ -26,8 +26,8 @@ export default function MyApp({ Component, pageProps }) {
     //localStorage.setItem("username", loginUserId); 
     console.log("call rerender");
     setAccessToken(localStorage.getItem("access"));
-    setLoginUserId(window.sessionStorage.getItem("userName"));
-    setLoginUserName(window.sessionStorage.getItem("loginId"));
+    setLoginUserId(window.sessionStorage.getItem("loginId"));
+    setLoginUserName(window.sessionStorage.getItem("userName"));
   }, [accessToken, loginUserId, loginUserName]);
   
 

@@ -84,11 +84,7 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
     }, 300)
   }
 
-  const options = [
-    { key: 1, text: 'Choice 1', value: 1 },
-    { key: 2, text: 'Choice 2', value: 2 },
-    { key: 3, text: 'Choice 3', value: 3 },
-  ]
+
   
   return (
     <div>
@@ -108,6 +104,7 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
 
         />
    </div>
+   {boardList.length !== 0 ?
       <div>
       {boardList.map((board) => (
         <li key={board.id}>{board.id}
@@ -123,15 +120,23 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
           {boardList.map((board) => (
            
            <ListItem href={`/board/detail/${board.id}`}  key={board.id} >
-              <ListIcon name='github' size='large' verticalAlign='middle'/>
               <ListContent>
-                <ListHeader>{board.id} || {board.boardTitle} || {board.boardWriter}</ListHeader>
-                <ListDescription>{board.boardCreatedTime}</ListDescription>
+                <ListHeader>{board.boardTitle}</ListHeader>
+                <ListDescription>Writer : {board.boardWriter}</ListDescription>
+                <ListDescription>{board.boardCreatedTime.substring(0, 10)}</ListDescription>
               </ListContent>
             </ListItem>
           ))}
         </List>
         </div>
+          : 
+          <div style={{display: 'flex',  justifyContent:'center'}}>
+          <h1 class="ui header">There is no Contents</h1>
+          </div>
+        
+          }
+        
+        
         {/* https://ko.react.dev/learn/javascript-in-jsx-with-curly-braces */}
         <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
         <Pagination
