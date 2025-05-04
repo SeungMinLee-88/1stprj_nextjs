@@ -18,14 +18,25 @@ import {
   FormGroup, FormField, ListItem,ListIcon,ListHeader,ListDescription,ListContent,List,Pagination,
   Search 
 } from 'semantic-ui-react'
+import { useContext } from 'react';
+import { UserIdContext } from './UserContext.js';
+import { UserNameContext } from './UserContext.js';
 
 let retRootId = "";
 let testVal="";
-export default function CommentList() {
+export default function CommentList({ boardId }) {
   const [commentListRender, setCommentListRender] = useState([]);
   const [commentListReturn, setCommentListReturn] = useState([]);
   const [rootIdSt, setRootIdSt] = useState();
+  const userId = useContext(UserIdContext);
+ console.log("comment userId : " + userId);
+
   
+ const [currentPage, setCurrentPage] = useState(1);
+ const [totalPage, setTotalPage] = useState(1);
+   useEffect(() => {
+       getData();
+     }, [currentPage, userId]);
 
   const addReply = e => {
     var replyId = "reply_div"+e.target.getAttribute('parentid');
@@ -40,7 +51,6 @@ export default function CommentList() {
   }
 
   async function commentGetRoot(commentId) {
-
     await Axios.get(`http://localhost:8090/comment/commentGetRoot`, {
       headers: {
         "Content-Type": "application/json", 
@@ -62,7 +72,6 @@ export default function CommentList() {
       retRootId = commentId
       setRootIdSt(commentId);
     }
-    testVal="111111111";
     //response.data.rootCommentId !== null ? rootId = response.data.rootCommentId : rootId = commentId;
 }).catch(function (error) {
 });
@@ -75,6 +84,7 @@ return retRootId;
   
   const saveFormSubmit = async evt => {
     evt.preventDefault(); 
+    console.log("userId : " + userId);
     console.log("prevent test");
     console.log("e.target.value : " + evt.target.parentId.getAttribute('parentid'));
     const parentCommentId = evt.target.parentId.getAttribute('parentid');
@@ -82,30 +92,25 @@ return retRootId;
     console.log("saveFormSubmit retRootId : " + retRootId);
     console.log("saveFormSubmit rootIdSt : " + rootIdSt);
     const formId = "form" + parentCommentId;
-    console.log("formId : " + formId);
+
     const formData = new FormData();
-    formData.append("commentWriter", "AAA");
-    formData.append("commentContents", document.getElementById(formId).val);
-    formData.append("boardId", 31);
-    formData.append("parentCommentId", parentCommentId);
-    formData.append("rootCommentId", rootId);
     console.log("document.getElementById(formId).val : " + document.getElementById(formId).value);
     //return;
     
     const resp = await Axios.post("http://localhost:8090/comment/commentSave",
       {
-        commentWriter: "ccc",
+        commentWriter: userId,
         commentContents: document.getElementById(formId).value,
-        boardId: 31,
+        boardId: boardId,
         parentCommentId: parentCommentId,
-        rootCommentId: rootId
+        rootCommentId: rootId,
+        isRootComment: "false"
       }
     )
     .then(function (response) {
       console.log("response.data : " + JSON.stringify(response.data));
-    /* const board = await resp.json(); */
-    //router.push(`/board/detail/${response.data.id}`);
-    //router.refresh();
+      alert("Save Success");
+      router.refresh();
     })
     .catch(function (error) {
       console.log(error);
@@ -128,12 +133,15 @@ return retRootId;
       )
       .then(function (response) {
         console.log("response.data : " + JSON.stringify(response.data));
+        alert("Update Success");
+      router.refresh();
       })
       .catch(function (error) {
         console.log(error);
       });
 
   }
+  
   var renderVal = [];
   function recursiveMap(commentLists, level, depthVal) {
     console.log("recursiveMap commentLists : " + JSON.stringify(commentLists));
@@ -167,7 +175,7 @@ return retRootId;
           </Form>
           </div>
 
-          {testVal && <CommentAction commentid={commentList["id"]} onClick={addEdit}>Edit</CommentAction>}
+          {userId === commentList["commentWriter"] && <CommentAction commentid={commentList["id"]} onClick={addEdit}>Edit</CommentAction>}
 
           <div id={"edit_div"+commentList["id"]} hidden>
           <Form onSubmit={updateFormSubmit}>
@@ -199,6 +207,15 @@ return retRootId;
           <button type="submit" className="ui primary button" color="blue">Write</button>
           </Form>
           </div>
+          {userId === commentList["commentWriter"] && <CommentAction commentid={commentList["id"]} onClick={addEdit}>Edit</CommentAction>}
+
+          <div id={"edit_div"+commentList["id"]} hidden>
+          <Form onSubmit={updateFormSubmit}>
+          <input type="text" id="commentId" name="commentId" commentid={commentList["id"]} />
+          <FormField id={"edit"+commentList["id"]} as="" control='textarea' rows='2' defaultValue={commentList["commentContents"]} />
+          <button type="submit" className="ui primary button" color="blue">Edit</button>
+          </Form>
+          </div>
         </CommentActions>
          </CommentContent>
          </Comment>);
@@ -209,7 +226,7 @@ return retRootId;
   }
   
     function getData() {
-        Axios.get(`http://localhost:8090/comment/commentTrees`, {
+        Axios.get(`http://localhost:8090/comment/commentList`, {
           headers: {
             "Content-Type": "application/json", 
             access: localStorage.getItem("access") 
@@ -217,7 +234,7 @@ return retRootId;
           params: {
             page: currentPage,
             size: "2",
-            boardId: 31
+            boardId: `${boardId}`
           },
         }
       ).then((response, error) => {
@@ -246,21 +263,47 @@ return retRootId;
     setCurrentPage(pageNumber);
   };
   
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(1);
-    useEffect(() => {
-        getData();
-      }, [currentPage]);
 
 
+
+      const addFormSubmit = async evt => {
+        evt.preventDefault(); 
+        const commentContents = evt.target.commentContents.val; 
+        const resp = await Axios.post("http://localhost:8090/comment/commentSave",
+          {
+            commentWriter:userId,
+            commentContents:commentContents,
+            boardId:boardId,
+            isRootComment:"true"
+          }
+        )
+        .then(function (response) {
+          console.log("response.data : " + JSON.stringify(response.data));
+          alert("Save Success");
+          router.refresh();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    
+    }
 
       return (
         <div>
+          {userId !== null &&
+          <Form onSubmit={addFormSubmit} reply>
+          <FormField name='commentContents' label='Comments' as="" control='textarea' rows='3' />
+          <button type="submit" className="ui icon primary left labeled button" color="blue">
+          <i aria-hidden="true" class="edit icon"></i>
+          Add Comment
+        </button>
+        </Form>
+        }
+        length : {commentListReturn.length}
         <CommentGroup>
           {commentListRender}
         </CommentGroup>
-        
-        
+        {commentListReturn.length > 0 &&
         <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
         <Pagination
           /* activePage={paginationOptions.activePage} */
@@ -275,7 +318,9 @@ return retRootId;
           onPageChange={(_, { activePage }) => goToPage(activePage)}
           
         />
+
         </div>
+          }
         </div>
         
      );

@@ -67,6 +67,8 @@ export default function BoardUpdate({ board, id }) {
     ).then((response, error) => {
       console.log("response : " + JSON.stringify(response.data));
       setFileList(response.data);
+      alert("Delete Success");
+      router.refresh();
       console.log("fileDelete fileList : " + JSON.stringify(fileList));
     }).catch(function (error) {
       console.log("error cause : " + JSON.stringify(error));
@@ -122,7 +124,6 @@ useEffect(() => {
           console.log("fileUpdateList.len : " + fileUpdateList.length);
           if(fileUpdateList.length === 0) {
             console.log("fileUpdateList.length === 0");
-            formData.append('boardFile', "");
           }else{
             console.log("fileUpdateList.length !== 0");
             fileUpdateList.forEach((fileUpdate) => {
@@ -145,7 +146,8 @@ useEffect(() => {
             console.log("response.data : " + JSON.stringify(response.data));
           /* const board = await resp.json(); */
           //router.push(`/board/detail/${response.data.id}`);
-          //router.refresh();
+          alert("Update Success");
+          router.push(`/board/detail/${id}`);
           })
           .catch(function (error) {
             console.log(error);
@@ -168,21 +170,25 @@ useEffect(() => {
 
 
          <FormGroup widths='equal'>
-         <FormField>
+         <FormField style={{width: "100px", "text-align":"left", "font-size":"20px"}}>
+            Writer : {boardDetail.boardWriter}
+          </FormField>
+          </FormGroup>
+         {/* <FormField>
          <label>boardWriter</label>
          <input name='boardWriter' value={boardDetail.boardWriter} onChange={e => setBoardDetail({...boardDetail, boardWriter: e.target.value})} />
-         </FormField>
-         <FormField>
+         </FormField> */}
+        {/*  <FormField>
          <label>boardPass</label>
          <input name='boardPass' value={boardDetail.boardPass} onChange={e => setBoardDetail({...boardDetail, boardPass: e.target.value})} />
-         </FormField>
+         </FormField> */}
+         <FormGroup widths='equal'>
          <FormField>
-         <label>boardTitle</label>
+         <label>Title</label>
          <input name='boardTitle' value={boardDetail.boardTitle} onChange={e => setBoardDetail({...boardDetail, boardTitle: e.target.value})} />
          </FormField>
          </FormGroup>
-         <label>Contents</label>
-         <FormField label='boardContents' as="" control='textarea' rows='3' value={boardDetail.boardContents} 
+         <FormField label='Contents' as="" control='textarea' rows='3' value={boardDetail.boardContents} 
           onChange={e => setBoardDetail({...boardDetail, boardContents: e.target.value})} />
          {board['fileAttached'] === 1 &&(
       <div>
@@ -213,15 +219,11 @@ useEffect(() => {
                </div>
            
              </Form.Field>
-             <FormField>
-         <label>boardFile</label>
-
-         </FormField>
          <Divider />
          <button type="submit" className="ui button">Update</button>
+         {userId === board.boardWriter ? <button className="ui button"  onClick={() => router.push(`http://localhost:3000/board/detail/${id}`)}>Cancel</button> : ""}
        </Form>
-       <Divider />
-       {userId === board.boardWriter ? <button className="ui button"  onClick={() => location.href=`http://localhost:3000/board/detail/${id}`}>Cancel</button> : ""}
+       
      </div>
       )}
     </>

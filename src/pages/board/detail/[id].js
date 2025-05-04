@@ -53,6 +53,29 @@ console.log("fileList  : " + JSON.stringify(fileList));
   console.log("fileList filter : " + JSON.stringify(fileList.filter(a => a.mimeType === "image")));
   console.log("imageFileList : " + JSON.stringify(imageFileList));
   console.log(`http://localhost:8090/board/update/${id}`)
+  
+  
+  const boardDelete = async () => {
+    if(!confirm("delelte?")){
+      return false;
+    }
+    await Axios.delete(`http://localhost:8090/api/v1/board/delete/${id}`, {
+      headers: {
+        "Content-Type": "application/json", 
+        access: localStorage.getItem("access") 
+      },
+      params: {
+      },
+    }
+  ).then((response, error) => {
+    alert("Delete Success");
+    router.push("/Board");
+  
+  }).catch(function (error) {
+    console.log("error cause : " + JSON.stringify(error));
+  });
+  };
+  
   return (
     <>
 
@@ -92,8 +115,14 @@ console.log("fileList  : " + JSON.stringify(fileList));
               )}
             </div>
             <Divider />
-            {userId === board.boardWriter ? <button className="ui button"  onClick={() => location.href=`http://localhost:3000/board/update/${id}`}>Edit</button> : ""}
-          {/* <CommentList /> */}
+            {userId === board.boardWriter && 
+            <div>
+            <button className="ui button"  onClick={() => router.push(`http://localhost:3000/board/update/${id}`)}>Edit</button>
+            
+            <button className="ui button"  onClick={boardDelete}>Delete</button>
+            </div>
+            }
+          <CommentList boardId={id} userId={userId}/>
         </>
       )}
     </>

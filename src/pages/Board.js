@@ -23,8 +23,7 @@ export default function Board() {
   const [searchValue, setSearchValue] = useState("");
   const [goUrl, setGoUrl] = useState("/");
   const userId = useContext(UserIdContext);
-  const userName = useContext(UserNameContext);
-  console.log("Board userId : " + userName);
+  console.log("Board userId : " + userId);
 
 
   const API_URL =
@@ -174,7 +173,7 @@ export default function Board() {
      <BoardList boardList={boardList} currentPage={currentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
      startPage={startPage} endPage={endPage} />      
 
-      {userName !== null ? <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button> : ""}
+      {userId !== null ? <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button> : ""}
     </div>
   );
 }
