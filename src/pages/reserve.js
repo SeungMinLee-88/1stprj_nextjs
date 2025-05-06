@@ -5,7 +5,12 @@ import Axios from "axios";
 import ReserveCalendar from "./reserveCalendar";
 import ReserveForm from "./reserveForm";
 import { useContext } from 'react';
-import { UserContext } from './UserContext.js';
+import { UserIdContext } from './UserContext.js';
+import { userIdContext } from './UserContext.js';
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import timeGridPlugin from "@fullcalendar/timegrid";
 
 const initialTasks = {
   events: [
@@ -38,17 +43,17 @@ const times = [];
 const reserveList = [];
 
 export default function Reserve() {
-  //console.log("sessionStorage username : " + window.sessionStorage.getItem("username"));
+  //console.log("sessionStorage userId : " + window.sessionStorage.getItem("userId"));
     const [reserveData, setreserveData] = useState([]);
     const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
-      const username = useContext(UserContext);
-       console.log("Reserve sessusername : " + username);
-       const [userName, setUserName] = useState(username);
+      const sessUserId = useContext(UserIdContext);
+       console.log("Reserve userId : " + sessUserId);
+       const [userId, setuserId] = useState(sessUserId);
 
     async function getData() {
-      setUserName(username);
-      console.log("getData userName : " + userName);
+      setuserId(userId);
+      console.log("getData userId : " + userId);
       await Axios.get(`http://localhost:8090/reserve/reserveList`, {
           headers: {
             "Content-Type": "application/json", 
@@ -56,7 +61,7 @@ export default function Reserve() {
           },
           params: {
             reserveDate: 202504,
-            userName: userName
+            userId: userId
           },
         }
       ).then((response, error) => {
@@ -138,17 +143,17 @@ export default function Reserve() {
     }
     
     console.log("reserveData : " + JSON.stringify(reserveData)); 
-    
+    const [formMode, setFormMode] = useState(""); 
+    const [isVisible, setisVisible] = useState(true);
     useEffect(() => {
       getData();
       console.log("times 222 : " + JSON.stringify(times));
-    }, [userName]);
+    }, [userId, isVisible]);
 /*     console.log("reserveData : " + JSON.stringify(reserveData)); */
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
    const [selectDate, setSelectDate] = useState("");
 
-   const [formMode, setFormMode] = useState(""); 
-      const [isVisible, setisVisible] = useState(true);
+
       const handleSelectedDates = info => {
 /*         console.log("info : " + JSON.stringify(info));
         console.log("moment start : " + moment(info.start).format('YYYY-MM-DD')); */
@@ -174,6 +179,7 @@ export default function Reserve() {
         setFormMode("reserve");
 /*         console.log("reserve SelectDate : " + selectDate); */
         setisVisible(true);
+        console.log("handleSelectedDates isVisible : " + isVisible);
       }
       
       const [reserveDetailId, setReserveDetailId] = useState("");
@@ -250,10 +256,6 @@ export default function Reserve() {
       };
         return(
         <div>
-        {isVisible && (
-      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} reserveDetailTimes={reserveDetailTimes} formMode={formMode}
-      userName={userName} />
-    )}
       
       <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -283,33 +285,10 @@ export default function Reserve() {
       eventRemove={function(){}}
       */
     />
-        
+         {isVisible && (
+      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} reserveDetailTimes={reserveDetailTimes} formMode={formMode}
+      userId={userId} />
+    )}
         </div>
     )
 }
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
-function Avatar({ reserveData }) {
-  console.log("Avatar reserveData : " + JSON.stringify(reserveData[0].events));
-   const [usertest, setusertest] = useState(reserveData[0].events);
-   
-       
-   console.log("Avatar usertest : " + JSON.stringify(usertest));
-   const reserveDataVal = {"events":[{"id":37,"title":"11","start":"2025-04-01T10:00:00","allDay":false}]};
-   console.log("Avatar reserveDataVal : " + JSON.stringify(reserveData));
-   return(
-    <div>          
-        {reserveData[0].events.map((reserve) => (
-        <li key={reserve.id}>
-          {reserve.id}
-        </li>
-      ))}
-      {console.log("reserveDataList inreturn : " + JSON.stringify({events: [reserveData]}))}
-         
-
-    </div>
-)
-  }

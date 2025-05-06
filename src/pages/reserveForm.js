@@ -2,12 +2,14 @@ import React from "react";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Axios from "axios";
-import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react' 
+import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react';
+import { useContext } from 'react';
+import { UserIdContext } from './UserContext.js';
+import { UserNameContext } from './UserContext.js';
 
 const initialTimes = [];
-export default function ReserveForm({ selectDate, reserveDetailId, detailTimes, formMode, userName }) {
+export default function ReserveForm({ selectDate, reserveDetailId, detailTimes, formMode }) {
   console.log("call ReserveForm");
-  console.log("ReserveForm userName : " + userName);
   console.log("ReserveForm selectDate : " + JSON.stringify(selectDate));
   console.log("ReserveForm reserveDetailId : " + JSON.stringify(reserveDetailId));
   console.log("ReserveForm formMode : " + JSON.stringify(formMode));
@@ -46,6 +48,10 @@ async function getData() {
 }
 const reserveDetailList = [];
 const reserveDetailTimeList = [];
+const userId = useContext(UserIdContext);
+const userName = useContext(UserNameContext);
+console.log("ReserveForm userId : " + userId);
+console.log("ReserveForm userName : " + userName);
 
 async function getDetailData() {
   console.log("ReserveForm call getDetailData");
@@ -117,7 +123,7 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
     useEffect(() => {
       getData();
       formMode === "update" ? getDetailData() : "";
-    }, [selectDate, reserveDetailId], formMode);
+    }, [selectDate, reserveDetailId, userId, userName], formMode);
     
     const [saveTimes, setSaveTimes] = useState([]);
     function reserveTimeReducer(times, action) {
@@ -160,7 +166,7 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
       <div key={reserveTime.id} className="ui compact segment" style={{margin: '0'}}>
           {!reserveTime.reserved ?
           <div className="ui fitted checkbox">
-            <input type="checkbox" className="" readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/>
+            <input label="111"  type="checkbox" className="" readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/>
             <label>
             </label>
             </div>
@@ -175,21 +181,20 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
             console.log("call onSubmit");
           //if(formMode === "update") return;
           evt.preventDefault();
-          const reserveId = evt.target.reserveId.value;
           const reserveReason = evt.target.reserveReason.value;
-          const reserveDate = evt.target.reserveDate.value;
-          const userId = evt.target.userId.value;
-          const userName = evt.target.userName.value;
-          const hallId = evt.target.hallId.value;
+          const reserveDate = formMode === "update" ? reserveDetail.reserveDate : selectDate;
+/*           const userId = userId;
+          const userName = userName; */
+          const hallId = 1;
           const reserveTimeSave = times;
           const reservePeriod = times.length;
-          console.log("reserveTimeSave : " + reserveTimeSave);
+          console.log("submit userId : " + userId);
           //return;
           if(formMode === "reserve"){
             const resp = await Axios.put(`http://localhost:8090/reserve/save`, {
               reserveReason: reserveReason,
               reserveDate: reserveDate,
-              userId: userId,
+              loginId: userId,
               userName: userName,
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
@@ -199,7 +204,8 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
               console.log("response.data : " + JSON.stringify(response.data));
             /* const board = await resp.json(); */
             // router.push(`/reserve`);
-            //router.refresh();
+            alert("Reserve Success")
+            router.refresh();
             })
             .catch(function (error) {
               console.log(error);
@@ -226,32 +232,26 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
         }}>
           <FormGroup widths='equal'>
           <FormField>
-          <label>reserveId</label>
-          <input name='reserveId' value={reserveDetail.id} onChange={e => setReserveDetail(e.target.value)} />
+          ID : {userId}
           </FormField>
           <FormField>
-          <label>reserveReason</label>
-          <input name='reserveReason' value={reserveDetail.reserveReason} onChange={e => setReserveDetail(e.target.value)} />
+          Name : {userName}
           </FormField>
           <FormField>
-          <label>reserveDate</label>
-          <input name='reserveDate' value={formMode === "update" ? reserveDetail.reserveDate : selectDate} onChange={e => setReserveDetail({...reserveDetail, reserveDate : e.target.value})}  />
+          Date : {formMode === "update" ? reserveDetail.reserveDate : selectDate}
           </FormField>
-          <FormField>
-          <label>userId</label>
-          <input name='userId' value={reserveDetail.userId}  onChange={e => setReserveDetail(e.target.value)}/>
-          </FormField>
-          <FormField>
-          <label>username</label>
-          <input name='userName' value={userName === "" ? reserveDetail.userName : userName}  onChange={e => setReserveDetail(e.target.value)}/>
-          </FormField>
-          <FormField>
+{/*           <FormField>
           <label>hallId</label>
           <input name='hallId' value={reserveDetail.hallId} onChange={e => setReserveDetail(e.target.value)} />
-          </FormField>
+          </FormField> */}
           <FormField>
-          <label>reservePeriod</label>
-          <input name='reservePeriod' value={times.length} onChange={e => setReserveDetail(e.target.value)} />
+          Period : {times.length}
+          </FormField>
+          </FormGroup>
+          <FormGroup widths='equal'>
+          <FormField>
+          <label>Reason</label>
+          <input name='reserveReason' value={reserveDetail.reserveReason} onChange={e => setReserveDetail(e.target.value)} />
           </FormField>
           </FormGroup>
           {formMode === "reserve" ? <button type="submit" className="ui button">reserve</button> 
