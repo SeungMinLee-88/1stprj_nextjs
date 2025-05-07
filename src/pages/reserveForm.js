@@ -38,7 +38,7 @@ async function getData() {
 /*     for (var responseKey in response.data) {
       reserveTimeList.push(response.data[responseKey]["timeId"]);
     } */
-    
+      console.log("response reserveTimes : " + JSON.stringify(response.data))
     setReserveTimes(response.data);
     console.log("getData reserveTimes : " + JSON.stringify(reserveTimes))
   }).catch(function (error) {
@@ -109,7 +109,7 @@ async function getDetailData() {
     console.log("error cause : " + JSON.stringify(error));
   });
 }
-console.log("reserveDetail : " + JSON.stringify(reserveDetail));
+console.log("reserveTimes 222222 : " + JSON.stringify(reserveTimes));
 console.log("reserveDetailTimes : " + JSON.stringify(reserveDetailTimes));
 console.log("initialTimes : " + JSON.stringify(initialTimes));
 
@@ -122,8 +122,13 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
     
     useEffect(() => {
       getData();
-      formMode === "update" ? getDetailData() : "";
-    }, [selectDate, reserveDetailId, userId, userName], formMode);
+      formMode === "update" ? getDetailData() : 
+      dispatch({
+        type: 'INITIAL',
+        times: initialTimes
+      });
+
+    }, [selectDate, reserveDetailId]);
     
     const [saveTimes, setSaveTimes] = useState([]);
     function reserveTimeReducer(times, action) {
@@ -158,7 +163,12 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
     const router = useRouter();
 
     console.log("formMode : " + formMode);
+    console.log("handleTimeChange reserveDetail : " + JSON.stringify(reserveDetail));
   
+    const handleReserveDetail = (e) =>{
+      console.log("e.target.value : "+ e.target.value);
+      setReserveDetail({...reserveDetail, reserveReason: e.target.value})
+    }
    return(
 <div>
 <div style={{display: 'flex'}}>
@@ -170,9 +180,10 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
             <label>
             </label>
             </div>
-            : reserveTime.userName === userName && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
+            : reserveTime.reserveUserId == userId && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
           }
-          {console.log("reserveTime.userName : " + reserveTime.userName)}
+          {reserveTime.reserveUserId === userId && console.log("User match")}
+          {console.log("reserveTime.reserveUserId chk!! : " + reserveTime.reserveUserId)}
         </div>
     /* )) */
       ))}
@@ -194,7 +205,7 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
             const resp = await Axios.put(`http://localhost:8090/reserve/save`, {
               reserveReason: reserveReason,
               reserveDate: reserveDate,
-              loginId: userId,
+              reserveUserId: userId,
               userName: userName,
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
@@ -213,10 +224,10 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
         }else if(formMode === "update"){
           const resp = await Axios.post(`http://localhost:8090/reserve/update`, 
             {
-              id: reserveId,
+              id: reserveDetail.id,
               reserveReason: reserveReason,
-              reserveDate: reserveDate,
-              userId: userId,
+              reserveDate: reserveDetail.reserveDate,
+              reserveUserId: userId,
               userName: userName,
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
@@ -251,7 +262,8 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
           <FormGroup widths='equal'>
           <FormField>
           <label>Reason</label>
-          <input name='reserveReason' value={reserveDetail.reserveReason} onChange={e => setReserveDetail(e.target.value)} />
+          <input name='reserveReason' value={reserveDetail.reserveReason}
+          onChange={handleReserveDetail} />
           </FormField>
           </FormGroup>
           {formMode === "reserve" ? <button type="submit" className="ui button">reserve</button> 

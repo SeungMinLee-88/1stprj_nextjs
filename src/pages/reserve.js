@@ -47,12 +47,12 @@ export default function Reserve() {
     const [reserveData, setreserveData] = useState([]);
     const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
-      const sessUserId = useContext(UserIdContext);
-       console.log("Reserve userId : " + sessUserId);
-       const [userId, setuserId] = useState(sessUserId);
+      const userId = useContext(UserIdContext);
+       console.log("Reserve userId : " + userId);
+       /* const [userId, setuserId] = useState(sessionUserId); */
 
     async function getData() {
-      setuserId(userId);
+      //setuserId(sessionUserId);
       console.log("getData userId : " + userId);
       await Axios.get(`http://localhost:8090/reserve/reserveList`, {
           headers: {
@@ -60,8 +60,8 @@ export default function Reserve() {
             access: localStorage.getItem("access") 
           },
           params: {
-            reserveDate: 202504,
-            userId: userId
+            reserveDate: 202505,
+            reserveUserId: userId
           },
         }
       ).then((response, error) => {
@@ -145,13 +145,15 @@ export default function Reserve() {
     console.log("reserveData : " + JSON.stringify(reserveData)); 
     const [formMode, setFormMode] = useState(""); 
     const [isVisible, setisVisible] = useState(true);
+    const [selectDate, setSelectDate] = useState("");
     useEffect(() => {
       getData();
+      console.log("reserve useEffect userId : " + JSON.stringify(userId));
       console.log("times 222 : " + JSON.stringify(times));
-    }, [userId, isVisible]);
+    }, [selectDate, userId, formMode, isVisible]);
 /*     console.log("reserveData : " + JSON.stringify(reserveData)); */
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
-   const [selectDate, setSelectDate] = useState("");
+
 
 
       const handleSelectedDates = info => {
@@ -286,8 +288,7 @@ export default function Reserve() {
       */
     />
          {isVisible && (
-      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} reserveDetailTimes={reserveDetailTimes} formMode={formMode}
-      userId={userId} />
+      <ReserveForm selectDate={selectDate} reserveDetailId={reserveDetailId} reserveDetailTimes={reserveDetailTimes} formMode={formMode} />
     )}
         </div>
     )
