@@ -144,7 +144,7 @@ export default function Reserve() {
     
     console.log("reserveData : " + JSON.stringify(reserveData)); 
     const [formMode, setFormMode] = useState(""); 
-    const [isVisible, setisVisible] = useState(true);
+    const [isVisible, setisVisible] = useState(false);
     const [selectDate, setSelectDate] = useState("");
     useEffect(() => {
       getData();
@@ -249,10 +249,13 @@ export default function Reserve() {
         console.log("arg hallId : " + JSON.stringify(arg.event.extendedProps.hallId));
         console.log("arg reservePeriod : " + JSON.stringify(arg.event.extendedProps.reservePeriod)); */
         
+        console.log("arg.event.extendedProps.reserveDate : " + arg.event.extendedProps.reserveDate);
+        console.log("arg.event.id : " + arg.event.id);
         setSelectDate(arg.event.extendedProps.reserveDate);
         setReserveDetailId(arg.event.id);
         console.log("handleEventClick reserveDetailId : " + reserveDetailId);
         getDetailData(arg.event.id);
+        setisVisible(true);
         setFormMode("update");
         
       };

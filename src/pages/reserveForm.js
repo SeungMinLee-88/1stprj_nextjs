@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Axios from "axios";
 import { Checkbox, Segment, FormGroup, FormField, Form  } from 'semantic-ui-react';
-import { useContext } from 'react';
+import { useContext, useRef, createRef } from 'react';
 import { UserIdContext } from './UserContext.js';
 import { UserNameContext } from './UserContext.js';
 
@@ -81,10 +81,6 @@ async function getDetailData() {
 
     
     for (var responseKey in response.data) {
-      //console.log(responseKey + " : responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]));
-      //console.log("reserveTime :" + JSON.stringify(response.data["reserveTime"]));
-      //console.log("responseKey[responseKey] :" + JSON.stringify(response.data[responseKey]["reserveTime"]));
-      
       if(responseKey === "reserveTime"){
         for (var timeKey in response.data["reserveTime"]) {
           console.log("reserveTime timeKey time : " +  timeKey + " : " + JSON.stringify(response.data[responseKey][timeKey]["time"]));
@@ -93,7 +89,6 @@ async function getDetailData() {
         }
       }
     }
-    //reserveDetailTimes.push(reserveDetailTimeList)
     console.log("reserveDetailTimeList : " + JSON.stringify(reserveDetailTimeList));
 
     setReserveDetailTimes(reserveDetailTimeList); 
@@ -119,7 +114,22 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
     
     console.log("set reserveTimeReducer");
     const [times, dispatch] = React.useReducer(reserveTimeReducer, initialTimes);  
+    const inputRef1 = useRef();
+    function clearTextInput() {
+      /* inputRef1.current.focus(); */
+      console.log("inputRef1 : " + inputRef1.current.value);
+      inputRef1.current.value= "";
+
+    }
     
+    const elementsRef = useRef([]);
+    const checkBoxRef = useRef([]);
+    function clearCheckBox() {
+      //elementsRef.current[0].value="1111";
+      //checkBoxRef.current[0].value="1";
+    }
+    
+    const [isChecked, setIsChecked] = useState(false);
     useEffect(() => {
       getData();
       formMode === "update" ? getDetailData() : 
@@ -127,10 +137,13 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
         type: 'INITIAL',
         times: initialTimes
       });
+      setReserveDetail("");
+      clearTextInput();
+      clearCheckBox();
+      /* console.log("elementsRef : " + elementsRef.current[0].type); */
 
     }, [selectDate, reserveDetailId]);
-    
-    const [saveTimes, setSaveTimes] = useState([]);
+
     function reserveTimeReducer(times, action) {
       console.log("action : " + JSON.stringify(action))
       
@@ -154,12 +167,12 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
       var actionType = "";
       actionType="testset";
       e.target.checked ? actionType = "CHECK" : actionType = "UNCHECK";
+      
+      e.target.checked ? setIsChecked(true) : setIsChecked(false);
       dispatch({ type: actionType, timeId: e.target.tabIndex})
     }
     console.log("handleTimeChange times : " + JSON.stringify(times));
-    const [saveReserve, setSaveReserve] = useState([
-      { reserveReason: '', reserveDate: '' ,userId: '', hallId: '', time: [], reservePeriod: '' }
-    ]);
+    
     const router = useRouter();
 
     console.log("formMode : " + formMode);
@@ -171,16 +184,25 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
     }
    return(
 <div>
-<div style={{display: 'flex'}}>
-{reserveTimes.map((reserveTime) => (
+<div style={{display: 'flex', "padding-left": "40px", "text-align": "center" }}>
+{reserveTimes.map((reserveTime, index) => (
       <div key={reserveTime.id} className="ui compact segment" style={{margin: '0'}}>
           {!reserveTime.reserved ?
-          <div className="ui fitted checkbox">
-            <input label="111"  type="checkbox" className="" readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/>
-            <label>
-            </label>
+            <div>
+            {/* {index} */}
+            {/* <input type="text" value="aaa" ref={ref => {elementsRef.current[index] = ref}}/> */}
+            <input type="checkbox" className="" readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange} value="1"/>
+            {reserveTime.time} ~ {parseInt(reserveTime.time)+1}
             </div>
-            : reserveTime.reserveUserId == userId && formMode === "update" ? <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> : <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
+            : reserveTime.reserveUserId == userId && formMode === "update" ? 
+            <label>
+            <input type="checkbox" className="" defaultChecked readOnly="" tabIndex={reserveTime.id} onChange={handleTimeChange}/> {reserveTime.time} ~ {parseInt(reserveTime.time)+1}
+            </label>
+            : 
+            <label>
+            <input type="checkbox" className="" disabled  readOnly="" tabIndex={reserveTime.id}/>
+            {reserveTime.time} ~ {parseInt(reserveTime.time)+1}
+            </label>
           }
           {reserveTime.reserveUserId === userId && console.log("User match")}
           {console.log("reserveTime.reserveUserId chk!! : " + reserveTime.reserveUserId)}
@@ -235,6 +257,8 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
             })
             .then(function (response) {
               console.log("response.data : " + JSON.stringify(response.data));
+              alert("Update Success")
+            router.refresh();
             })
             .catch(function (error) {
               console.log(error);
@@ -263,7 +287,7 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
           <FormField>
           <label>Reason</label>
           <input name='reserveReason' value={reserveDetail.reserveReason}
-          onChange={handleReserveDetail} />
+          onChange={handleReserveDetail} ref={inputRef1}/>
           </FormField>
           </FormGroup>
           {formMode === "reserve" ? <button type="submit" className="ui button">reserve</button> 
