@@ -21,8 +21,8 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
 /*   console.log("Login loginUserId : " + loginUserId); */
   function login() {
     console.log("call login");
-
   }
+  console.log("${process.env.NEXT_PUBLIC_API_URL} : " + process.env.NEXT_PUBLIC_API_URL)
   const [open, setOpen] = useState(true)
   //console.log("access : " + localStorage.getItem("access"))
   return (
@@ -32,7 +32,7 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
           const loginId = evt.target.loginId.value;
           const userPassword = evt.target.userPassword.value;
           //Axios.defaults.withCredentials = true;
-          await Axios.post(`http://localhost:8090/login`, 
+          await Axios.post(`${process.env.API_URL}/api/v1/user/login`, 
             {
               loginId: loginId,
               userPassword: userPassword
@@ -40,24 +40,6 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
             {
               withCredentials: true
             },
-            {
-              headers :{
-                'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header, access',
-                'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
-                'Access-Control-Allow-Origin':'http://localhost:8090/login',
-                'Access-Control-Expose-Headers':'userName, access'
-              }
-            }
-/*             {
-              headers :{
-                'Access-Control-Allow-Headers':'x-requested-with, Request-Header, Response-Header',
-                'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
-                'Access-Control-Allow-Origin':'*',
-                'Access-Control-Expose-Headers':'userName'
-              }
-            }, */
-         
-          
           )
           .then(function (response) {
             console.log("response : " + JSON.stringify(response));
@@ -77,8 +59,8 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
           /* const board = await resp.json(); */
           //router.push(`/`);
           //router.refresh();
-          /* alert("Login Success");
-          router.push(`/`); */
+          alert("Login Success");
+          router.push(`/`);
           })
           .catch(function (error) {
             console.log("error : " + error);

@@ -15,7 +15,7 @@ export default function Top({setAccessToken, setLoginUserId, setLoginUserName, a
     console.log("Top accessToken : " + accessToken);
   async function logout(){
     console.log("call logout");
-    await Axios.post(`http://localhost:8090/logout` ,
+    await Axios.post(`http://localhost:8090/api/v1/user/logout` ,
     {},
     {withCredentials: true}
     )
