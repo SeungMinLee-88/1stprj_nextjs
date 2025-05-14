@@ -6,7 +6,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useContext } from 'react';
 import { UserIdContext } from './UserContext.js';
 import { UserNameContext } from './UserContext.js';
-
+import Axios from "axios";
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -22,6 +22,7 @@ export default function MyApp({ Component, pageProps }) {
   //console.log("sessionStorage username : " + window.sessionStorage.getItem("username"));
   
   useEffect(() => {
+    refreshToken()
     //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
     //localStorage.setItem("username", loginUserId); 
     console.log("call rerender");
@@ -35,6 +36,28 @@ export default function MyApp({ Component, pageProps }) {
   //console.log("MyApp userIdContext : " + userIdContext);
   console.log("MyApp sessusername : " + loginUserId);
   console.log("MyApp accessToken : " + accessToken);
+  
+  async function refreshToken()
+  {
+    const refreshToken = "";
+    await Axios.post(`http://localhost:8090/reissue` ,
+      {},
+      {withCredentials: true}
+      )
+      .then(function (response) {
+        console.log("response.data : " + JSON.stringify(response));
+        if(response.status === 200){
+          console.log("response.status200");
+          localStorage.removeItem("access");
+          localStorage.setItem("access", response.headers.access);
+        }
+      //router.push(`/`);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  
   return (
     <div style={{ width: 800, margin: "0 auto" }}>
 {/*       <AccessTokenContext value={accessToken}> */}
