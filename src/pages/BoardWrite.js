@@ -99,20 +99,10 @@ useEffect(() => {
         {/* <Form onSubmit={async evt=>{
           evt.preventDefault();}}> */}
         <Form onSubmit={onFormSubmit}>
-            <FormGroup widths='equal'>
-            <FormField style={{width: "100px", "text-align":"left", "font-size":"20px"}}>
-            Writer : 
-            {/* <label>Writer : {userName}</label>
-            <input name='boardWriter'/> */}
-            </FormField>
-            <FormField style={{"text-align":"left", "font-size":"20px"}}>
-            {userName}
-{/*             <label>boardPass</label>
-            <input name='boardPass' /> */}
-            </FormField>
-            </FormGroup>
+
             <FormField>
-            <label>Title</label>
+            <label><span>Title</span> <span style={{"margin-left": "700px"}}>Writer :  {userName}</span></label>
+
             <input name='boardTitle' />
             </FormField>
 

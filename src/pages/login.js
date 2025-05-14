@@ -32,7 +32,7 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
           const loginId = evt.target.loginId.value;
           const userPassword = evt.target.userPassword.value;
           //Axios.defaults.withCredentials = true;
-          await Axios.post(`${process.env.API_URL}/api/v1/user/login`, 
+          await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/login`, 
             {
               loginId: loginId,
               userPassword: userPassword
