@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps }) {
   //console.log("sessionStorage username : " + window.sessionStorage.getItem("username"));
   
   useEffect(() => {
-    refreshToken()
+    //refreshToken()
     //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todoList));
     //localStorage.setItem("username", loginUserId); 
     console.log("call rerender");

@@ -27,11 +27,11 @@ export default function Board() {
 
 
   const API_URL =
-    `${process.env.NEXT_PUBLIC_API_URL}/pagingList`;
+    `${process.env.NEXT_PUBLIC_API_URL}/boardList`;
     var startPage = "";
     var endPage = "";
     
-  async function refreshToken()
+  /* async function refreshToken()
   {
     const refreshToken = "";
     await Axios.post(`http://localhost:8090/reissue` ,
@@ -50,10 +50,10 @@ export default function Board() {
       .catch(function (error) {
         console.log(error);
       });
-  }
+  } */
     
   function getData() {
-    Axios.get("http://localhost:8090/api/v1/board/pagingList", {
+    Axios.get("http://localhost:8090/api/v1/board/boardList", {
       headers: {
         "Content-Type": "application/json", 
         access: localStorage.getItem("access") 
