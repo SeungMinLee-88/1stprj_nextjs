@@ -13,6 +13,7 @@ export default function MyApp({ Component, pageProps }) {
   const [accessToken, setAccessToken] = useState();
   const [loginUserId, setLoginUserId] = useState();
   const [loginUserName, setLoginUserName] = useState("");
+  const [reissueResult, setReissueResult] = useState(false);
   console.log("loginUserId : " + loginUserId);
   
   //console.log("localStorage username : " + localStorage.getItem("username"));
@@ -29,33 +30,49 @@ export default function MyApp({ Component, pageProps }) {
     setAccessToken(localStorage.getItem("access"));
     setLoginUserId(window.sessionStorage.getItem("loginId"));
     setLoginUserName(window.sessionStorage.getItem("userName"));
-  }, [accessToken, loginUserId, loginUserName]);
+  }, [accessToken, loginUserId, loginUserName, reissueResult]);
   
+  console.log("MyApp reissueResult : " + reissueResult);
 
   const userId = useContext(UserIdContext);
   //console.log("MyApp userIdContext : " + userIdContext);
   console.log("MyApp sessusername : " + loginUserId);
   console.log("MyApp accessToken : " + accessToken);
   
-  async function refreshToken()
+  async function reissueAccessToken()
   {
-    const refreshToken = "";
-    await Axios.post(`http://localhost:8090/reissue` ,
+   
+    let result = "";
+    await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/reIssueToken` ,
       {},
       {withCredentials: true}
       )
       .then(function (response) {
-        console.log("response.data : " + JSON.stringify(response));
+        console.log("reissueAccessToken response.data : " + JSON.stringify(response));
         if(response.status === 200){
-          console.log("response.status200");
+          console.log("reissueAccessToken response.status200");
           localStorage.removeItem("access");
           localStorage.setItem("access", response.headers.access);
+          
         }
+        //setReissueResult(true);
+        result = true;
       //router.push(`/`);
       })
       .catch(function (error) {
-        console.log(error);
+        console.log("error : " + error);
+            console.log("reissueAccessToken data : " + error.response.data);
+            console.log("reissueAccessToken status : " + error.response.status);
+            console.log("reissueAccessToken headers : " + error.response.headers);
+            console.log("reissueAccessToken error : " + error.response.data);
+            setReissueResult(false);
+            result = false;
+            return false;
       });
+      
+      //console.log("reissueAccessToken reissueResult : " + reissueResult);
+      //return reissueResult;
+      return result;
   }
   
   return (
@@ -63,7 +80,7 @@ export default function MyApp({ Component, pageProps }) {
 {/*       <AccessTokenContext value={accessToken}> */}
       <UserIdContext value={loginUserId}><UserNameContext value={loginUserName}>
       <Top setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} setLoginUserName={setLoginUserName} accessToken={accessToken}/>
-      <Component {...pageProps} setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} setLoginUserName={setLoginUserName} />
+      <Component {...pageProps} setAccessToken={setAccessToken} setLoginUserId={setLoginUserId} setLoginUserName={setLoginUserName} reissueAccessToken={reissueAccessToken} accessToken={accessToken}/>
       <Footer />
       </UserNameContext>
       </UserIdContext>

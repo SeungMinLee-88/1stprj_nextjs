@@ -40,6 +40,22 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
             {
               withCredentials: true
             },
+            {
+              headers :{
+                'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header, access',
+                'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Expose-Headers':'userName, access'
+              }
+            }
+            /* {
+              headers :{
+                'Access-Control-Allow-Headers':'Content-Type, Authorization, userName, Response-Header, access',
+                'Access-Control-Allow-Methods':'POST, GET, OPTIONS, DELETE',
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Expose-Headers':' access'
+              }
+            } */
           )
           .then(function (response) {
             console.log("response : " + JSON.stringify(response));

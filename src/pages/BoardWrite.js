@@ -8,13 +8,13 @@ import { UserIdContext } from './UserContext.js';
 import { UserNameContext } from './UserContext.js';
 
 
-export default function BoardWrite({ changeGoUrl }) {
+export default function BoardWrite({ changeGoUrl, reissueAccessToken }) {
   const [userName, setUserName] = useState(useContext("")) 
   const [fileList, setFileList] = useState([]);
   const [fileNameList, setfileNameList] = useState("");
   console.log("BoardWrite userName : " + userName);
 
-  
+  const router = useRouter();
   const data = new FormData();
   const fileChange = e => {
     console.log("e.target.value : " +  e.target.value)
@@ -71,10 +71,16 @@ useEffect(() => {
           //formData.append("boardFile[]", fileList);
           
           console.log("formData : " + JSON.stringify(formData))
+          const accessToken = localStorage.getItem("access")
     
-          const resp = await Axios.post("http://localhost:8090/api/v1/board/boardSave",
+          const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/boardSave`,
             formData,
-            {headers: {'Content-Type': 'multipart/form-data' }}
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'access' : accessToken
+              }
+            }
 /*             headers: {
               'Content-Type': 'multipart/form-data'
             }, */
@@ -85,8 +91,34 @@ useEffect(() => {
           //router.push(`/board/detail/${response.data.id}`);
           //router.refresh();
           })
-          .catch(function (error) {
-            console.log(error);
+          .catch(async function (error) {
+            console.log("error : " + error);
+            console.log("data : " + error.response.data);
+            console.log("status : " + error.response.status);
+            console.log("headers : " + error.response.headers);
+            console.log("error : " + error.response.data);
+            
+            if(error.response.status === 401){
+              if(confirm("Session is expired. Do you want Reissue?"))
+                {
+                  console.log("Reissue true")
+                  const reissueResult = await reissueAccessToken();
+                  console.log("BoardWrite reissueResult : " +reissueResult);
+                  if(reissueResult){
+                    alert("Reissue success")
+                  }else{
+                    alert("Reissue false");
+                    //router.push(`/Board`); 
+                  }
+                  
+                }
+                else
+                {
+                  console.log("Reissue false")
+                }
+            }
+            
+            
           });
           //router.refresh();
     
@@ -101,7 +133,7 @@ useEffect(() => {
         <Form onSubmit={onFormSubmit}>
 
             <FormField>
-            <label><span>Title</span> <span style={{"margin-left": "700px"}}>Writer :  {userName}</span></label>
+            <label><span>Title</span> <span style={{"marginLeft": "700px"}}>Writer :  {userName}</span></label>
 
             <input name='boardTitle' />
             </FormField>
@@ -122,8 +154,8 @@ useEffect(() => {
                 </div>
               </Form.Field>
             <div style={{display: 'flex', justifyContent:'right'}}>
-            <button type="button"  class="ui button" onClick={() => changeGoUrl("/")}>List</button>
-            <button type="submit" class="ui button">Write</button>
+            <button type="button"  className="ui button" onClick={() => changeGoUrl("/")}>List</button>
+            <button type="submit" className="ui button">Write</button>
             </div>
         </Form>
       </div>

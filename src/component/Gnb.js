@@ -41,16 +41,16 @@ export default function Gnb() {
       />
       <Menu.Item
         name="Reaserve"
-        active={activeItem === "reserve"}
+        active={activeItem === "Reserve"}
         onClick={() => {
-          router.push("/reserve");
+          router.push("/Reserve");
         }}
       />
       <Menu.Item
         name="Manage User"
-        active={activeItem === "admin"}
+        active={activeItem === "ManagerUser"}
         onClick={() => {
-          router.push("/admin");
+          router.push("/ManagerUser");
         }}
       />
       

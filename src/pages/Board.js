@@ -55,8 +55,7 @@ export default function Board() {
   function getData() {
     Axios.get("http://localhost:8090/api/v1/board/boardList", {
       headers: {
-        "Content-Type": "application/json", 
-        access: localStorage.getItem("access") 
+        "Content-Type": "application/json"
       },
       params: {
         page: currentPage,
