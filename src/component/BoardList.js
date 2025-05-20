@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import { Container,
-  ListItem,
-  ListIcon,
+import {ListItem,
   ListHeader,
   ListDescription,
   ListContent,
   List,
   Pagination,
   Search  } from "semantic-ui-react";
+  import { useRouter } from "next/navigation";
 import styles from "./ItemList.module.css";
 import Link from "next/link";
 
@@ -34,21 +33,10 @@ const initialState = {
   results: [],
   value: '',
 }
-export default function BoardList({ boardList, currentPage, TotalPage, changePage, changeSearchKey, changeSearchValue, searchKey, startPage, endPage }) {
+export default function BoardList({ boardList, currentPage, setCurrentPage, TotalPage, changePage, changeSearchKey, changeSearchValue, searchKey, startPage, endPage }) {
   const [state, dispatch] = React.useReducer(exampleReducer, initialState)
   const { loading, results, value } = state
-  const [paginationOptions, setPaginationOptions] = useState({
-    activePage: currentPage,
-    boundaryRange: 1,
-    siblingRange: 1,
-    showEllipsis: true,
-    showFirstAndLastNav: false,
-    showPreviousAndNextNav: true,
-    totalPages: TotalPage
-  });
-  
-  const [activePageData, setActivePageData] = useState([]);
-
+  const router = useRouter();
   
   const goToPage = pageNumber => {
     //setPaginationOptions({ ...paginationOptions, activePage: pageNumber });
@@ -68,13 +56,13 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
     dispatch({ type: 'START_SEARCH', query: data.value })
     console.log("results : " + results);
     changeSearchValue(data.value);
+    setCurrentPage(1);
 
     timeoutRef.current = setTimeout(() => {
       if (data.value.length === 0) {
         dispatch({ type: 'CLEAN_QUERY' })
         return
       }
-
       const re = new RegExp(_.escapeRegExp(data.value), 'i')
       const isMatch = (result) => re.test(result.title)
 
@@ -106,20 +94,9 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
    </div>
    {boardList.length !== 0 ?
       <div>
-      {boardList.map((board) => (
-        <li key={board.id}>{board.id}
-        </li>
-      ))}
        <List divided relaxed>
-        {/* {  if(boardList.length === 0){
-    return <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}><h1>No Content</h1></div>
-  }} */}
-   {/* <ListItem href="/board/detail/${board.id}"  key={board.id} > */}
-   {/* <Link href="/board/detail/[id]" as={`/board/detail/${board.id}`}> */}
-
           {boardList.map((board) => (
-           
-           <ListItem href={`/board/detail/${board.id}`}  key={board.id} >
+           <ListItem onClick={() => router.push(`/board/detail/${board.id}`)}  key={board.id} >
               <ListContent>
                 <ListHeader>{board.boardTitle}</ListHeader>
                 <ListDescription>Writer : {board.boardWriter}</ListDescription>
@@ -131,7 +108,7 @@ export default function BoardList({ boardList, currentPage, TotalPage, changePag
         </div>
           : 
           <div style={{display: 'flex',  justifyContent:'center'}}>
-          <h1 class="ui header">There is no Contents</h1>
+          <h1 className="ui header">There is no Contents</h1>
           </div>
         
           }

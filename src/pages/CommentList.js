@@ -51,7 +51,7 @@ export default function CommentList({ boardId }) {
   }
 
   async function commentGetRoot(commentId) {
-    await Axios.get(`http://localhost:8090/comment/commentGetRoot`, {
+    await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentGetRoot`, {
       headers: {
         "Content-Type": "application/json", 
         access: localStorage.getItem("access") 
@@ -97,7 +97,7 @@ return retRootId;
     console.log("document.getElementById(formId).val : " + document.getElementById(formId).value);
     //return;
     
-    const resp = await Axios.post("http://localhost:8090/comment/commentSave",
+    const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentSave`,
       {
         commentWriter: userId,
         commentContents: document.getElementById(formId).value,
@@ -125,7 +125,7 @@ return retRootId;
       console.log("document.getElementById(editFormId).val : " + document.getElementById(editFormId).value);
 
       
-      const resp = await Axios.post("http://localhost:8090/comment/commentUpdate",
+      const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentUpdate`,
         {
           id: commentId,
           commentContents: document.getElementById(editFormId).value,
@@ -226,7 +226,7 @@ return retRootId;
   }
   
     function getData() {
-        Axios.get(`http://localhost:8090/comment/commentList`, {
+        Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentList`, {
           headers: {
             "Content-Type": "application/json", 
             access: localStorage.getItem("access") 
@@ -269,7 +269,14 @@ return retRootId;
       const addFormSubmit = async evt => {
         evt.preventDefault(); 
         const commentContents = evt.target.commentContents.val; 
-        const resp = await Axios.post("http://localhost:8090/comment/commentSave",
+        const accessToken = localStorage.getItem("access");
+        
+        console.log("accessToken : " + accessToken)
+        const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentSave`,
+          
+          headers: {
+            'access' : accessToken
+          },
           {
             commentWriter:userId,
             commentContents:commentContents,

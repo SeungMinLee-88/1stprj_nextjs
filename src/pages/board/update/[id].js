@@ -54,7 +54,7 @@ export default function BoardUpdate({ board, id }) {
 
   const fileDelete = async function (fileId, boardId) {
     if(window.confirm('Delete the item?')){
-      await Axios.get(`http://localhost:8090/api/v1/board/fileDelete/${fileId}&${boardId}`, {
+      await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/fileDelete/${fileId}&${boardId}`, {
         headers: {
           "Content-Type": "application/json", 
           access: localStorage.getItem("access") 
@@ -80,7 +80,7 @@ export default function BoardUpdate({ board, id }) {
   
   const getFileList = async function (boardId) {
 
-      await Axios.get(`http://localhost:8090/api/v1/board/fileList/${fileId}`, {
+      await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/fileList/${fileId}`, {
         headers: {
           "Content-Type": "application/json", 
           access: localStorage.getItem("access") 
@@ -135,7 +135,7 @@ useEffect(() => {
           
           console.log("formData : " + JSON.stringify(formData))
     
-          const resp = await Axios.post("http://localhost:8090/api/v1/board/updateBoard",
+          const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/updateBoard`,
             formData,
             {headers: {'Content-Type': 'multipart/form-data' }}
 /*             headers: {
@@ -249,7 +249,7 @@ useEffect(() => {
         getData();
       }, []); */
 export async function getStaticPaths() {
-  const apiUrl =  `http://localhost:8090/api/v1/board/list`;
+  const apiUrl =  `${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/list`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
   return {
@@ -270,7 +270,7 @@ export async function getStaticProps(context) {
   
   console.log("call getStaticProps");
   const id = context.params.id;
-  const apiUrl = `http://localhost:8090/api/v1/board/${id}`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/detail/${id}`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
 

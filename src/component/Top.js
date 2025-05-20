@@ -15,7 +15,7 @@ export default function Top({setAccessToken, setLoginUserId, setLoginUserName, a
     console.log("Top accessToken : " + accessToken);
   async function logout(){
     console.log("call logout");
-    await Axios.post(`http://localhost:8090/api/v1/user/logout` ,
+    await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/logout` ,
     {},
     {withCredentials: true}
     )
@@ -56,7 +56,6 @@ export default function Top({setAccessToken, setLoginUserId, setLoginUserName, a
         <Header as="h1">Spring</Header>
       </div>
       <div style={{display: 'flex',  justifyContent:'right'}}>
-        {!accessToken ? "false" : "true"}
         {!accessToken ? 
         <button className="ui primary button" color="blue" onClick={() => {router.push("/login");}}>LogIn</button> 
         : <button className="ui primary button" color="blue" onClick={() => logout()}>LogOut</button>}

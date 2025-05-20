@@ -52,14 +52,14 @@ export default function BoardDetail({ board, name, id }) {
 console.log("fileList  : " + JSON.stringify(fileList));
   console.log("fileList filter : " + JSON.stringify(fileList.filter(a => a.mimeType === "image")));
   console.log("imageFileList : " + JSON.stringify(imageFileList));
-  console.log(`http://localhost:8090/board/update/${id}`)
+  console.log(`${process.env.NEXT_PUBLIC_API_URL}/board/update/${id}`)
   
   
   const boardDelete = async () => {
     if(!confirm("delelte?")){
       return false;
     }
-    await Axios.delete(`http://localhost:8090/api/v1/board/delete/${id}`, {
+    await Axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/delete/${id}`, {
       headers: {
         "Content-Type": "application/json", 
         access: localStorage.getItem("access") 
@@ -91,7 +91,7 @@ console.log("fileList  : " + JSON.stringify(fileList));
               </p>
               {imageFileList.map((imageFiles) => (
                     <div>
-                     <img src={"http://localhost:8090/api/v1/board/download/"+imageFiles.storedFileName} class="ui medium bordered image"/>                     
+                     <img src={`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/download/`+imageFiles.storedFileName} class="ui medium bordered image"/>                     
                      </div>
                    
                    ))}
@@ -108,7 +108,7 @@ console.log("fileList  : " + JSON.stringify(fileList));
                     <ListItem active>Attached | </ListItem>
                 {fileList.map((files) => (
                    
-                    <a role="listitem" id={files.id} className="item"  href={"http://localhost:8090/api/v1/board/download/"+files.storedFileName} target="_blank">{files.originalFileName}{files.type}</a>                   
+                    <a role="listitem" id={files.id} className="item"  href={`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/download/`+files.storedFileName} target="_blank">{files.originalFileName}{files.type}</a>                   
                   
                   ))}
                   </List>
@@ -117,7 +117,7 @@ console.log("fileList  : " + JSON.stringify(fileList));
             <Divider />
             {userId === board.boardWriter && 
             <div>
-            <button className="ui button"  onClick={() => router.push(`http://localhost:3000/board/update/${id}`)}>Edit</button>
+            <button className="ui button"  onClick={() => router.push(`/board/update/${id}`)}>Edit</button>
             
             <button className="ui button"  onClick={boardDelete}>Delete</button>
             </div>
@@ -129,7 +129,7 @@ console.log("fileList  : " + JSON.stringify(fileList));
   );
 };
 /*   async function getData() {
-    await Axios.get(`http://localhost:8090/api/v1/board/31`, {
+    await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/31`, {
         headers: {
           "Content-Type": "application/json", 
           access: localStorage.getItem("access") 
@@ -148,7 +148,7 @@ console.log("fileList  : " + JSON.stringify(fileList));
         getData();
       }, []); */
 export async function getStaticPaths() {
-  const apiUrl =  `http://localhost:8090/api/v1/board/list`;
+  const apiUrl =  `${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/list`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
   return {
@@ -169,7 +169,7 @@ export async function getStaticProps(context) {
   
   console.log("call getStaticProps");
   const id = context.params.id;
-  const apiUrl = `http://localhost:8090/api/v1/board/${id}`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/detail/${id}`;
   const res = await Axios.get(apiUrl);
   const data = res.data;
 

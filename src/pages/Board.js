@@ -4,12 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Divider, Header } from "semantic-ui-react";
 import BoardList from "../component/BoardList";
-import BoardWrite from "./BoardWrite";
-import Reacttest from "./Reacttest";
 import Error403 from "./403";
 import { useContext } from 'react';
 import { UserIdContext } from './UserContext.js';
-import { UserNameContext } from './UserContext.js';
 
 export default function Board() {
   const [boardList, setboardList] = useState([]);
@@ -22,38 +19,15 @@ export default function Board() {
   const [searchKey, setSearchKey] = useState("boardTitle");
   const [searchValue, setSearchValue] = useState("");
   const [goUrl, setGoUrl] = useState("/");
+  const [startPage, setStartPage] = useState("/");
+  const [endPage, setEndPage] = useState("/");
+  
+  
   const userId = useContext(UserIdContext);
   console.log("Board userId : " + userId);
-
-
-  const API_URL =
-    `${process.env.NEXT_PUBLIC_API_URL}/boardList`;
-    var startPage = "";
-    var endPage = "";
-    
-  /* async function refreshToken()
-  {
-    const refreshToken = "";
-    await Axios.post(`http://localhost:8090/reissue` ,
-      {},
-      {withCredentials: true}
-      )
-      .then(function (response) {
-        console.log("response.data : " + JSON.stringify(response));
-        if(response.status === 200){
-          console.log("response.status200");
-          localStorage.removeItem("access");
-          localStorage.setItem("access", response.headers.access);
-        }
-      //router.push(`/`);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  } */
     
   function getData() {
-    Axios.get("http://localhost:8090/api/v1/board/boardList", {
+    Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/boardList`, {
       headers: {
         "Content-Type": "application/json"
       },
@@ -74,10 +48,10 @@ export default function Board() {
       }); */
       setTotalPage(response.data.totalPages);
       
-      startPage = (((Number)(Math.ceil(Number(currentPage) / response.data.totalPages))) - 1) * response.data.pageable.pageSize + 1;
+      setStartPage((((Number)(Math.ceil(Number(currentPage) / response.data.totalPages))) - 1) * response.data.pageable.pageSize + 1);
 
 
-      endPage = ((startPage + response.data.pageable.pageSize - 1) < response.data.totalPages) ? startPage + response.data.pageable.pageSize - 1 : response.data.totalPages;
+      setEndPage(((startPage + response.data.pageable.pageSize - 1) < response.data.totalPages) ? startPage + response.data.pageable.pageSize - 1 : response.data.totalPages);
       console.log("endPage : " + endPage);
       
       console.log("response.data.content : " + JSON.stringify(response.data.content));
@@ -149,15 +123,16 @@ export default function Board() {
   } */
  console.log("goUrl : " + goUrl);
  console.log("boardList except : " + JSON.stringify(boardList));
- if(goUrl === "BoardWrite")
+/*  if(goUrl === "BoardWrite")
  {
   return (
     <div>
       <BoardWrite changeGoUrl={setGoUrl}/>
       
     </div>
-  )
+  ) 
 }
+  */
   return (
     <div>
       <Head>
@@ -167,12 +142,10 @@ export default function Board() {
       Board
       </Header>
       <Divider />
-      {boardList.length}
-
-     <BoardList boardList={boardList} currentPage={currentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
+     <BoardList boardList={boardList} currentPage={currentPage} setCurrentPage = {setCurrentPage} TotalPage={totalPage} changePage={changePage} changeSearchKey={setSearchKey} changeSearchValue={setSearchValue} searchKey={searchKey} 
      startPage={startPage} endPage={endPage} />      
 
-      {userId !== null ? <button className="ui button" onClick={() => setGoUrl("BoardWrite")}>Write</button> : ""}
+      {userId !== null ? <button className="ui button" onClick={() => router.push("/BoardWrite")}>Write</button> : ""}
     </div>
   );
 }
