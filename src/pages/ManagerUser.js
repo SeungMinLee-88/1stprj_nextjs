@@ -11,9 +11,10 @@ export default function ManagerUser({setAccessToken, setLoginUserId, setLoginUse
     //const accessToken = useContext(AccessTokenContext);
       const userId = useContext(UserIdContext);
       console.log("ManagerUser userId : " + userId);
-      console.log("ManagerUser accessToken : " + accessToken);
+      
     async function chkAuthor(){
       console.log("call chkAuthor");
+      console.log("ManagerUser accessToken : " + accessToken);
       await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/manageUser` ,
       {
         headers: {
@@ -31,7 +32,10 @@ export default function ManagerUser({setAccessToken, setLoginUserId, setLoginUse
         //router.push(`/`);
       })
       .catch(function (error) {
-        console.log(error);
+        if(error.response.status === 403){
+                alert("you are not authorized");
+                router.push(`/`); 
+        }
       });
     }
     
@@ -42,6 +46,7 @@ export default function ManagerUser({setAccessToken, setLoginUserId, setLoginUse
     
     return (
       <div>
+      ManagerUser
       </div>
     );
 }
