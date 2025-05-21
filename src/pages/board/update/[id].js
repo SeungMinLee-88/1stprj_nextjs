@@ -53,7 +53,7 @@ export default function BoardUpdate({ board, id }) {
   )
 
   const fileDelete = async function (fileId, boardId) {
-    if(window.confirm('Delete the item?')){
+    if(window.confirm('Delete attached file?')){
       await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/fileDelete/${fileId}&${boardId}`, {
         headers: {
           "Content-Type": "application/json", 

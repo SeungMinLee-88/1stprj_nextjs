@@ -1,26 +1,20 @@
 import Axios from "axios";
-import Head from "next/head";
 import { useEffect, useState } from "react";
 import {
   CommentText,
-  CommentMetadata,
   CommentGroup,
   CommentContent,
-  CommentAvatar,
   CommentActions,
   CommentAction,
   CommentAuthor,
-  FormTextArea,
-  Button,
   Comment,
   Form,
-  Header,
-  FormGroup, FormField, ListItem,ListIcon,ListHeader,ListDescription,ListContent,List,Pagination,
-  Search 
+  FormField
+  ,Pagination
 } from 'semantic-ui-react'
 import { useContext } from 'react';
 import { UserIdContext } from './UserContext.js';
-import { UserNameContext } from './UserContext.js';
+import { useRouter } from "next/router";
 
 let retRootId = "";
 let testVal="";
@@ -29,7 +23,10 @@ export default function CommentList({ boardId }) {
   const [commentListReturn, setCommentListReturn] = useState([]);
   const [rootIdSt, setRootIdSt] = useState();
   const userId = useContext(UserIdContext);
+ // const [accessToken, setAccessToken] = useState(localStorage.getItem("access"));
+/*   const accessToken = localStorage.getItem("access"); */
  console.log("comment userId : " + userId);
+ const router = useRouter();
 
   
  const [currentPage, setCurrentPage] = useState(1);
@@ -105,12 +102,17 @@ return retRootId;
         parentCommentId: parentCommentId,
         rootCommentId: rootId,
         isRootComment: "false"
+      },
+      {
+        headers: {
+          'access' : localStorage.getItem("access") 
+        }
       }
     )
     .then(function (response) {
       console.log("response.data : " + JSON.stringify(response.data));
       alert("Save Success");
-      router.refresh();
+      router.reload();
     })
     .catch(function (error) {
       console.log(error);
@@ -129,12 +131,17 @@ return retRootId;
         {
           id: commentId,
           commentContents: document.getElementById(editFormId).value,
+        },
+        {
+          headers: {
+            'access' : localStorage.getItem("access") 
+          }
         }
       )
       .then(function (response) {
         console.log("response.data : " + JSON.stringify(response.data));
         alert("Update Success");
-      router.refresh();
+        router.reload();
       })
       .catch(function (error) {
         console.log(error);
@@ -169,7 +176,7 @@ return retRootId;
           
           <div id={"reply_div"+commentList["id"]} hidden>
           <Form onSubmit={saveFormSubmit}>
-          <input type="text" id="parentId" name="parentId" parentid={commentList["id"]} />
+          <input type="text" id="parentId" name="parentId" parentid={commentList["id"]} hidden />
           <FormField id={"form"+commentList["id"]} as="" control='textarea' rows='2' />
           <button type="submit" className="ui primary button" color="blue">Write</button>
           </Form>
@@ -179,7 +186,7 @@ return retRootId;
 
           <div id={"edit_div"+commentList["id"]} hidden>
           <Form onSubmit={updateFormSubmit}>
-          <input type="text" id="commentId" name="commentId" commentid={commentList["id"]} />
+          <input type="text" id="commentId" name="commentId" commentid={commentList["id"]} hidden />
           <FormField id={"edit"+commentList["id"]} as="" control='textarea' rows='2' defaultValue={commentList["commentContents"]} />
           <button type="submit" className="ui primary button" color="blue">Edit</button>
           </Form>
@@ -202,7 +209,7 @@ return retRootId;
         <CommentAction parentid={commentList["id"]} onClick={addReply}>Reply</CommentAction>
           <div id={"reply_div"+commentList["id"]} hidden>
           <Form onSubmit={saveFormSubmit}>
-          <input type="text" id="parentId" name="parentId" parentid={commentList["id"]} />
+          <input type="text" id="parentId" name="parentId" parentid={commentList["id"]} hidden />
           <FormField id={"form"+commentList["id"]} as="" control='textarea' rows='2' />
           <button type="submit" className="ui primary button" color="blue">Write</button>
           </Form>
@@ -211,7 +218,7 @@ return retRootId;
 
           <div id={"edit_div"+commentList["id"]} hidden>
           <Form onSubmit={updateFormSubmit}>
-          <input type="text" id="commentId" name="commentId" commentid={commentList["id"]} />
+          <input type="text" id="commentId" name="commentId" commentid={commentList["id"]} hidden />
           <FormField id={"edit"+commentList["id"]} as="" control='textarea' rows='2' defaultValue={commentList["commentContents"]} />
           <button type="submit" className="ui primary button" color="blue">Edit</button>
           </Form>
@@ -268,26 +275,28 @@ return retRootId;
 
       const addFormSubmit = async evt => {
         evt.preventDefault(); 
-        const commentContents = evt.target.commentContents.val; 
-        const accessToken = localStorage.getItem("access");
+        const commentContents = evt.target.commentContents.value; 
+
+        console.log("commentContents : " + commentContents)
         
-        console.log("accessToken : " + accessToken)
-        const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentSave`,
-          
-          headers: {
-            'access' : accessToken
-          },
+
+        await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/comment/commentSave`,
           {
             commentWriter:userId,
             commentContents:commentContents,
             boardId:boardId,
             isRootComment:"true"
+          },
+          {
+            headers: {
+              'access' : localStorage.getItem("access") 
+            }
           }
         )
         .then(function (response) {
           console.log("response.data : " + JSON.stringify(response.data));
           alert("Save Success");
-          router.refresh();
+          router.reload();
         })
         .catch(function (error) {
           console.log(error);

@@ -73,7 +73,7 @@ useEffect(() => {
           console.log("formData : " + JSON.stringify(formData))
           const accessToken = localStorage.getItem("access")
     
-          const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/boardSave`,
+          await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/boardSave`,
             formData,
             {
               headers: {
@@ -81,15 +81,10 @@ useEffect(() => {
                 'access' : accessToken
               }
             }
-/*             headers: {
-              'Content-Type': 'multipart/form-data'
-            }, */
           )
           .then(function (response) {
-            console.log("response.data : " + JSON.stringify(response.data));
-          /* const board = await resp.json(); */
-          //router.push(`/board/detail/${response.data.id}`);
-          //router.refresh();
+            alert("Save Success");
+            router.push(`/Board`);
           })
           .catch(async function (error) {
             console.log("error : " + error);

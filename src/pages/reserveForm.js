@@ -24,7 +24,7 @@ export default function ReserveForm({ selectDate, reserveDetailId, detailTimes, 
 async function getData() {
   console.log("ReserveForm call getData");
   const reserveTimeList = [];
-  await Axios.get(`http://localhost:8090/reserve/timeList`, {
+  await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/timeList`, {
       headers: {
         "Content-Type": "application/json", 
         access: localStorage.getItem("access") 
@@ -57,7 +57,7 @@ async function getDetailData() {
   console.log("ReserveForm call getDetailData");
   console.log("selectDate " + selectDate);
   const reserveTimeList = [];
-  await Axios.get(`http://localhost:8090/reserve/reserveDetail/${reserveDetailId}`, {
+  await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/reserveDetail/${reserveDetailId}`, {
       headers: {
         "Content-Type": "application/json", 
         access: localStorage.getItem("access") 
@@ -224,7 +224,7 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
           console.log("submit userId : " + userId);
           //return;
           if(formMode === "reserve"){
-            const resp = await Axios.put(`http://localhost:8090/reserve/save`, {
+            await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/save`, {
               reserveReason: reserveReason,
               reserveDate: reserveDate,
               reserveUserId: userId,
@@ -232,7 +232,13 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
               reservePeriod: reservePeriod
-            })
+            },
+            {
+              headers: {
+                access: localStorage.getItem("access") 
+              }
+            }
+          )
             .then(function (response) {
               console.log("response.data : " + JSON.stringify(response.data));
             /* const board = await resp.json(); */
@@ -244,7 +250,7 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
               console.log(error);
             });
         }else if(formMode === "update"){
-          const resp = await Axios.post(`http://localhost:8090/reserve/update`, 
+          const resp = await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/update`, 
             {
               id: reserveDetail.id,
               reserveReason: reserveReason,
@@ -254,7 +260,13 @@ console.log("initialTimes : " + JSON.stringify(initialTimes));
               hallId: hallId,
               reserveTimeSave: reserveTimeSave,
               reservePeriod: reservePeriod
-            })
+            },
+            {
+              headers: {
+                access: localStorage.getItem("access") 
+              }
+            }
+          )
             .then(function (response) {
               console.log("response.data : " + JSON.stringify(response.data));
               alert("Update Success")

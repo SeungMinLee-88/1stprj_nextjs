@@ -56,7 +56,7 @@ console.log("fileList  : " + JSON.stringify(fileList));
   
   
   const boardDelete = async () => {
-    if(!confirm("delelte?")){
+    if(!confirm("Do you want to delete?")){
       return false;
     }
     await Axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board/delete/${id}`, {

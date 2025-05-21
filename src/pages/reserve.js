@@ -1,12 +1,10 @@
 import React from "react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Axios from "axios";
-import ReserveCalendar from "./reserveCalendar";
 import ReserveForm from "./reserveForm";
 import { useContext } from 'react';
 import { UserIdContext } from './UserContext.js';
-import { userIdContext } from './UserContext.js';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -45,7 +43,6 @@ const reserveList = [];
 export default function Reserve() {
   //console.log("sessionStorage userId : " + window.sessionStorage.getItem("userId"));
     const [reserveData, setreserveData] = useState([]);
-    const [reserveDataList, setreserveDataList] = useState("");
     var moment = require('moment');
       const userId = useContext(UserIdContext);
        console.log("Reserve userId : " + userId);
@@ -54,7 +51,7 @@ export default function Reserve() {
     async function getData() {
       //setuserId(sessionUserId);
       console.log("getData userId : " + userId);
-      await Axios.get(`http://localhost:8090/reserve/reserveList`, {
+      await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/reserveList`, {
           headers: {
             "Content-Type": "application/json", 
             access: localStorage.getItem("access") 
@@ -194,7 +191,7 @@ export default function Reserve() {
         console.log("ReserveForm call getDetailData");
         console.log("selectDate " + selectDate);
         const reserveTimeList = [];
-        await Axios.get(`http://localhost:8090/reserve/reserveDetail/${detailId}`, {
+        await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/reserveDetail/${detailId}`, {
             headers: {
               "Content-Type": "application/json", 
               access: localStorage.getItem("access") 
@@ -267,7 +264,7 @@ export default function Reserve() {
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        right: 'dayGridMonth'
       }}
       initialView='dayGridMonth'
       select={handleSelectedDates}
