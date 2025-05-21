@@ -51,13 +51,16 @@ export default function Reserve() {
     async function getData() {
       //setuserId(sessionUserId);
       console.log("getData userId : " + userId);
+      console.log("getData toolBarState : " + toolBarState);
+      
+      console.log("getData moment : " + moment(new Date()).format('YYYYMM'));
       await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reserve/reserveList`, {
           headers: {
             "Content-Type": "application/json", 
             access: localStorage.getItem("access") 
           },
           params: {
-            reserveDate: 202505,
+            reserveDate: toolBarState,
             reserveUserId: userId
           },
         }
@@ -139,11 +142,11 @@ export default function Reserve() {
         });
     }
     
-    console.log("reserveData : " + JSON.stringify(reserveData)); 
+    console.log("reserveData chk : " + JSON.stringify(reserveData)); 
     const [formMode, setFormMode] = useState(""); 
     const [isVisible, setisVisible] = useState(false);
     const [selectDate, setSelectDate] = useState("");
-    const [toolBarState, setToolBarState] = useState("");
+    const [toolBarState, setToolBarState] = useState(moment(new Date()).format('YYYYMM'));
     useEffect(() => {
       getData();
       console.log("reserve useEffect userId : " + JSON.stringify(userId));
@@ -258,13 +261,26 @@ export default function Reserve() {
         
       };
       
-      const calendarRef = useRef(null);
+  const calendarRef = useRef(null);
 
   const handleNextButtonClick = () => {
     if (calendarRef.current) {
       console.log(calendarRef.current.calendar.currentData.currentDate)
+      const currentMonth = moment(calendarRef.current.calendar.currentData.currentDate).format('YYYYMM');
+      console.log("currentMonth : " + parseInt(currentMonth)+1);
       const calendarApi = calendarRef.current.getApi();
       calendarApi.next();
+      setToolBarState(parseInt(currentMonth)+1);
+    }
+  };
+  const handlePrevButtonClick = () => {
+    if (calendarRef.current) {
+      console.log(calendarRef.current.calendar.currentData.currentDate)
+      const currentMonth = moment(calendarRef.current.calendar.currentData.currentDate).format('YYYYMM');
+      console.log("currentMonth : " + parseInt(currentMonth)-1)
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.prev();
+      setToolBarState(parseInt(currentMonth)-1);
     }
   };
         return(
@@ -281,10 +297,7 @@ export default function Reserve() {
       customButtons= {{
         prev: {
           text: 'prev',
-          click: function() {
-            
-            //setToolBarState('clicked the custom button!');
-          }
+          click: handlePrevButtonClick
         },
         next: {
           text: 'next',
