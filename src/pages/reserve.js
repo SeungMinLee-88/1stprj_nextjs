@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef  } from "react";
 import { useRouter } from "next/navigation";
 import Axios from "axios";
 import ReserveForm from "./reserveForm";
@@ -143,11 +143,12 @@ export default function Reserve() {
     const [formMode, setFormMode] = useState(""); 
     const [isVisible, setisVisible] = useState(false);
     const [selectDate, setSelectDate] = useState("");
+    const [toolBarState, setToolBarState] = useState("");
     useEffect(() => {
       getData();
       console.log("reserve useEffect userId : " + JSON.stringify(userId));
       console.log("times 222 : " + JSON.stringify(times));
-    }, [selectDate, userId, formMode, isVisible]);
+    }, [selectDate, userId, formMode, isVisible, toolBarState]);
 /*     console.log("reserveData : " + JSON.stringify(reserveData)); */
    // console.log("reserveData[0].events : " + JSON.stringify(reserveData.events));
 
@@ -256,16 +257,41 @@ export default function Reserve() {
         setFormMode("update");
         
       };
+      
+      const calendarRef = useRef(null);
+
+  const handleNextButtonClick = () => {
+    if (calendarRef.current) {
+      console.log(calendarRef.current.calendar.currentData.currentDate)
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.next();
+    }
+  };
         return(
         <div>
       
       <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
         right: 'dayGridMonth'
       }}
+      customButtons= {{
+        prev: {
+          text: 'prev',
+          click: function() {
+            
+            //setToolBarState('clicked the custom button!');
+          }
+        },
+        next: {
+          text: 'next',
+          click: handleNextButtonClick
+        }
+      }}
+      ref={calendarRef}
       initialView='dayGridMonth'
       select={handleSelectedDates}
       eventClick={handleEventClick}
