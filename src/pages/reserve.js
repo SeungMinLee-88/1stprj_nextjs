@@ -40,7 +40,7 @@ const initialTasks = {
 const times = [];
 const reserveList = [];
 
-export default function Reserve() {
+export default function Reserve({ reissueAccessToken }) {
   //console.log("sessionStorage userId : " + window.sessionStorage.getItem("userId"));
     const [reserveData, setreserveData] = useState([]);
     var moment = require('moment');
@@ -49,6 +49,8 @@ export default function Reserve() {
        /* const [userId, setuserId] = useState(sessionUserId); */
 
     async function getData() {
+      
+
       //setuserId(sessionUserId);
       console.log("getData userId : " + userId);
       console.log("getData toolBarState : " + toolBarState);
@@ -138,8 +140,37 @@ export default function Reserve() {
           }
         }
         setreserveData(reserveTotalList);
-        }).catch(function (error) {
+        })
+        .catch(async function (error) {
+          
+          console.log("error : " + error);
+            console.log("data : " + error.response.data);
+            console.log("status : " + error.response.status);
+            console.log("headers : " + error.response.headers);
+            console.log("error : " + error.response.data);
+          if(error.response.status === 401){
+            if(confirm("Session is expired. Do you want Reissue?"))
+              {
+                console.log("Reissue true")
+                setTimeout(() => console.log("after"), 3000);
+                const reissueResult = await reissueAccessToken();
+                console.log("reserve reissueResult : " +reissueResult);
+                if(reissueResult){
+                  alert("Reissue success")
+                }else{
+                  alert("Reissue false");
+                  //router.push(`/Board`); 
+                }
+                
+              }
+              else
+              {
+                console.log("Reissue false")
+              }
+          }
         });
+        
+        
     }
     
     console.log("reserveData chk : " + JSON.stringify(reserveData)); 

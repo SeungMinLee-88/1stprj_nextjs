@@ -41,8 +41,9 @@ export default function MyApp({ Component, pageProps }) {
   
   async function reissueAccessToken()
   {
-   
+    console.log("call reissueAccessToken");
     let result = "";
+    console.log("call reissueAccessToken 2222222");
     await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/user/reIssueToken` ,
       {},
       {withCredentials: true}
@@ -60,14 +61,13 @@ export default function MyApp({ Component, pageProps }) {
       //router.push(`/`);
       })
       .catch(function (error) {
-        console.log("error : " + error);
+        console.log("reissueAccessToken error : " + error);
             console.log("reissueAccessToken data : " + error.response.data);
             console.log("reissueAccessToken status : " + error.response.status);
             console.log("reissueAccessToken headers : " + error.response.headers);
             console.log("reissueAccessToken error : " + error.response.data);
             setReissueResult(false);
             result = false;
-            return false;
       });
       
       //console.log("reissueAccessToken reissueResult : " + reissueResult);
