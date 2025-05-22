@@ -79,7 +79,9 @@ export default function Login({setAccessToken, setLoginUserId, setLoginUserName}
           router.push(`/`);
           })
           .catch(function (error) {
-            console.log("error : " + error);
+            if(error.response.status === 401){
+              alert("Login Fail");
+            }
           });
           }}>
         <Form.Field inline>
